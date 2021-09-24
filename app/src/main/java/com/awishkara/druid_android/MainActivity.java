@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -12,7 +13,6 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
@@ -26,6 +26,15 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("MY_APP", Context.MODE_PRIVATE);
+        String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
+        if (access_token != null) {
+            APIServer(access_token).users().index();
+            // get name and check if it's valid
+            // if valid take me to devices
+            // if not valid clear preference
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -57,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     void getAccessToken(String code) {
         Uri.Builder builder = new Uri.Builder();
         Uri uri = builder.scheme("https")
-                .authority("druid-web.herokuapp.com")
+                .authority(BuildConfig.API_SERVER_HOST)
                 .appendPath("oauth")
                 .appendPath("token")
                 .build();
@@ -73,7 +82,10 @@ public class MainActivity extends AppCompatActivity {
         Context context = getApplicationContext();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, uri.toString(), new JSONObject(params), (JSONObject response) -> {
             try {
-                Toast toast = Toast.makeText(context, response.getString("access_token"), Toast.LENGTH_SHORT);
+                String access_token = response.getString("access_token");
+                SharedPreferences shared_preferences = context.getSharedPreferences("MY_APP", Context.MODE_PRIVATE);
+                shared_preferences.edit().putString("API_SERVER_ACCESS_TOKEN", access_token).apply();
+                Toast toast = Toast.makeText(context, access_token, Toast.LENGTH_SHORT);
                 toast.show();
             } catch (Exception e) {
 
