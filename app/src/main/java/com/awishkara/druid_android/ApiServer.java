@@ -1,7 +1,9 @@
 package com.awishkara.druid_android;
 
+import com.awishkara.druid_android.api.Devices;
 import com.awishkara.druid_android.api.Users;
 import com.awishkara.druid_android.api.meta.Callback;
+import com.awishkara.druid_android.models.Device;
 import com.awishkara.druid_android.models.User;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -22,12 +24,13 @@ public class ApiServer {
     private String baseUrl = BuildConfig.API_SERVER_SCHEME + "://" + BuildConfig.API_SERVER_HOST + "/api/v1/";
 
     public Users users;
+    public Devices devices;
 
     ApiServer(String access_token) {
         this.access_token = access_token;
 
         JsonAdapter.Factory jsonApiAdapterFactory = ResourceAdapterFactory.builder()
-                .add(User.class)
+                .add(User.class, Device.class)
                 .build();
 
         Moshi moshi = new Moshi.Builder()
@@ -51,6 +54,7 @@ public class ApiServer {
                 .addConverterFactory(JsonApiConverterFactory.create(moshi))
                 .build();
         this.users = retrofit.create(Users.class);
+        this.devices = retrofit.create(Devices.class);
     }
 
     void isAuthenticated(Callback cb) {

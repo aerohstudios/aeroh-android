@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -36,8 +35,9 @@ public class MainActivity extends AppCompatActivity {
             api_server.isAuthenticated(new Callback() {
                 @Override
                 public void onSuccess() {
-                    Toast toast = Toast.makeText(context, "Take me to devices", Toast.LENGTH_SHORT);
-                    toast.show();
+                    Intent intent = new Intent(context, DevicesActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
 
                 @Override
