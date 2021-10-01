@@ -5,11 +5,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,6 +26,7 @@ import retrofit2.Response;
 
 public class DevicesActivity extends AppCompatActivity {
     ListView devicesListView;
+    DevicesArrayAdapter devicesArrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,14 +58,23 @@ public class DevicesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_devices);
 
         devicesListView = findViewById(R.id.devices_list_view);
+        devicesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Device device = devicesArrayAdapter.getItem(position);
+                Intent intent = new Intent(getApplicationContext(), DeviceActivity.class);
+                intent.putExtra("device", device);
+                startActivity(intent);
+            }
+        });
     }
 
     void populateDevicesList(List<Device> devices) {
-        DevicesArrayAdapter devicesArrayAdapter = new DevicesArrayAdapter(getApplicationContext(), devices);
+        devicesArrayAdapter = new DevicesArrayAdapter(getApplicationContext(), devices);
         devicesListView.setAdapter(devicesArrayAdapter);
     }
 
-    class DevicesArrayAdapter extends ArrayAdapter<Device> {
+    static class DevicesArrayAdapter extends ArrayAdapter<Device> {
 
         public DevicesArrayAdapter(@NonNull Context context, @NonNull List<Device> objects) {
             super(context, 0, objects);
