@@ -5,7 +5,9 @@
       <map>
         <entry key="app/src/main/res/layout/activity_device.xml" value="0.19791666666666666" />
         <entry key="app/src/main/res/layout/activity_devices.xml" value="0.19791666666666666" />
+        <entry key="app/src/main/res/layout/activity_scan_devices.xml" value="0.34148550724637683" />
         <entry key="app/src/main/res/layout/devices_list_item.xml" value="0.34148550724637683" />
+        <entry key="app/src/main/res/layout/scanned_devices_list_item.xml" value="0.19791666666666666" />
       </map>
     </option>
   </component>

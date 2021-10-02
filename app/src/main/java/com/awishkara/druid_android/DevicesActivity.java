@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -64,6 +65,15 @@ public class DevicesActivity extends AppCompatActivity {
                 Device device = devicesArrayAdapter.getItem(position);
                 Intent intent = new Intent(getApplicationContext(), DeviceActivity.class);
                 intent.putExtra("device", device);
+                startActivity(intent);
+            }
+        });
+
+        Button btnAddDevice = findViewById(R.id.btnAddDevice);
+        btnAddDevice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), ScanDevicesActivity.class);
                 startActivity(intent);
             }
         });
