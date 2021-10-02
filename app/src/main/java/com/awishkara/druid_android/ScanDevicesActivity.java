@@ -72,10 +72,9 @@ public class ScanDevicesActivity extends AppCompatActivity {
     }
 
     private void startBtDiscovery() {
+        // example code for bluetooth scanning
         // https://programmer.group/5e841c1909e93.html
-        // get more info about permissions
-
-        // bt permissions
+        // bt official permission guide
         // https://developer.android.com/about/versions/12/features/bluetooth-permissions
 
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -109,7 +108,7 @@ public class ScanDevicesActivity extends AppCompatActivity {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress();
-                if (device != null && deviceName != null) {
+                if (deviceName != null) {
                     Log.e("Found BT Device Name = ", deviceName);
                     Log.e("Found BT Device Addr = ", deviceHardwareAddress);
                     if (mDevicesAdapter.getPosition(device) < 0) {
