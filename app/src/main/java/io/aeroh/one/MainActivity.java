@@ -1,6 +1,6 @@
-package com.awishkara.druid_android;
+package io.aeroh.one;
 
-import com.awishkara.druid_android.api.meta.Callback;
+import io.aeroh.one.api.meta.Callback;
 
 import androidx.appcompat.app.AppCompatActivity;
 

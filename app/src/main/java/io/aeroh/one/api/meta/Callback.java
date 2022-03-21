@@ -1,4 +1,4 @@
-package com.awishkara.druid_android.api.meta;
+package io.aeroh.one.api.meta;
 
 public interface Callback {
     void onSuccess();

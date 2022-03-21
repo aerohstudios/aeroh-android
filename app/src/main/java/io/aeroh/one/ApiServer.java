@@ -1,10 +1,10 @@
-package com.awishkara.druid_android;
+package io.aeroh.one;
 
-import com.awishkara.druid_android.api.Devices;
-import com.awishkara.druid_android.api.Users;
-import com.awishkara.druid_android.api.meta.Callback;
-import com.awishkara.druid_android.models.Device;
-import com.awishkara.druid_android.models.User;
+import io.aeroh.one.api.Devices;
+import io.aeroh.one.api.Users;
+import io.aeroh.one.api.meta.Callback;
+import io.aeroh.one.models.Device;
+import io.aeroh.one.models.User;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 

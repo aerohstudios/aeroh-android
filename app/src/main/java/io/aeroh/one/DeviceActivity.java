@@ -1,11 +1,11 @@
-package com.awishkara.druid_android;
+package io.aeroh.one;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.awishkara.druid_android.models.Device;
+import io.aeroh.one.models.Device;
 
 public class DeviceActivity extends AppCompatActivity {
 

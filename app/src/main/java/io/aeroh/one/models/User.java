@@ -1,4 +1,4 @@
-package com.awishkara.druid_android.models;
+package io.aeroh.one.models;
 
 import com.squareup.moshi.Json;
 

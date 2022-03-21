@@ -1,4 +1,4 @@
-package com.awishkara.druid_android;
+package io.aeroh.one;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,7 +17,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.awishkara.druid_android.models.Device;
+import io.aeroh.one.models.Device;
 
 import java.util.List;
 

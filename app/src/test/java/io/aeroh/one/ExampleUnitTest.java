@@ -1,4 +1,4 @@
-package com.awishkara.druid_android;
+package io.aeroh.one;
 
 import org.junit.Test;
 

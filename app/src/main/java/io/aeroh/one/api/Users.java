@@ -1,6 +1,6 @@
-package com.awishkara.druid_android.api;
+package io.aeroh.one.api;
 
-import com.awishkara.druid_android.models.User;
+import io.aeroh.one.models.User;
 
 import java.util.List;
 

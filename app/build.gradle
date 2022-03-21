@@ -7,7 +7,7 @@ android {
     buildToolsVersion '30.0.3'
 
     defaultConfig {
-        applicationId "com.awishkara.druid_android"
+        applicationId "io.aeroh.one"
         minSdkVersion 16
         targetSdkVersion 31
         versionCode 1
@@ -15,11 +15,11 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField "String", "API_SERVER_HOST", '"druid-web.herokuapp.com"'
+        buildConfigField "String", "API_SERVER_HOST", '"api.aeroh.io"'
         buildConfigField "String", "API_SERVER_SCHEME", '"https"'
         buildConfigField "String", "API_SERVER_CLIENT_ID", getSecret("API_SERVER_CLIENT_ID")
         buildConfigField "String", "API_SERVER_CLIENT_SECRET", getSecret("API_SERVER_CLIENT_SECRET")
-        buildConfigField "String", "API_SERVER_REDIRECT_URI", '"awishkara-druid:///oauth2"'
+        buildConfigField "String", "API_SERVER_REDIRECT_URI", '"aeroh-one:///oauth2"'
     }
 
     buildTypes {
