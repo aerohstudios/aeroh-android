@@ -9,8 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -27,52 +25,51 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("MY_APP", Context.MODE_PRIVATE);
-        String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
-        if (access_token != null) {
-            ApiServer api_server = new ApiServer(access_token);
-            Context context = getApplicationContext();
-            api_server.isAuthenticated(new Callback() {
-                @Override
-                public void onSuccess() {
-                    Intent intent = new Intent(context, DevicesActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-
-                @Override
-                public void onFailure() {
-                    shared_preferences.edit().remove("API_SERVER_ACCESS_TOKEN").apply();
-                }
-            });
-        }
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_splash);
 
         Intent intent = getIntent();
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             Uri uri = intent.getData();
             String code = uri.getQueryParameter("code");
-
             getAccessToken(code);
+        } else {
+            verifyAccessToken();
         }
+    }
 
-        Button loginBtn = (Button) findViewById(R.id.login);
-        loginBtn.setOnClickListener((View view) -> {
-                Uri.Builder builder = new Uri.Builder();
-                Uri uri = builder.scheme(BuildConfig.API_SERVER_SCHEME)
-                        .encodedAuthority(BuildConfig.API_SERVER_HOST)
-                        .appendPath("oauth")
-                        .appendPath("authorize")
-                        .appendQueryParameter("client_id", BuildConfig.API_SERVER_CLIENT_ID)
-                        .appendQueryParameter("redirect_uri", BuildConfig.API_SERVER_REDIRECT_URI)
-                        .appendQueryParameter("response_type", "code")
-                        .appendQueryParameter("scope", "mobile").build();
+    void openLoginActivity() {
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
-                Intent login_intent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(login_intent);
-        });
+    void openDevicesActivity() {
+        Intent intent = new Intent(getApplicationContext(), DevicesActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    void verifyAccessToken() {
+        SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
+        String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
+        if (access_token != null) {
+            ApiServer api_server = new ApiServer(access_token);
+            api_server.isAuthenticated(new Callback() {
+                @Override
+                public void onSuccess() {
+                    openDevicesActivity();
+                }
+
+                @Override
+                public void onFailure() {
+                    shared_preferences.edit().remove("API_SERVER_ACCESS_TOKEN").apply();
+                    openLoginActivity();
+                }
+            });
+        } else {
+            openLoginActivity();
+        }
     }
 
     void getAccessToken(String code) {
@@ -95,13 +92,14 @@ public class MainActivity extends AppCompatActivity {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, uri.toString(), new JSONObject(params), (JSONObject response) -> {
             try {
                 String access_token = response.getString("access_token");
-                SharedPreferences shared_preferences = context.getSharedPreferences("MY_APP", Context.MODE_PRIVATE);
+                SharedPreferences shared_preferences = context.getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
                 shared_preferences.edit().putString("API_SERVER_ACCESS_TOKEN", access_token).apply();
+                verifyAccessToken();
             } catch (Exception e) {
-
+                // TODO: Exception Handling
             }
         }, (VolleyError error) -> {
-
+            // TODO: Exception Handling
         });
 
         queue.add(jsonObjectRequest);
