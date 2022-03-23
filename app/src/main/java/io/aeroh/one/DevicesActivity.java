@@ -31,7 +31,7 @@ public class DevicesActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("MY_APP", Context.MODE_PRIVATE);
+        SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
         String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
         if (access_token != null) {
             ApiServer api_server = new ApiServer(access_token);
