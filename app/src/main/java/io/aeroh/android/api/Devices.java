@@ -1,6 +1,6 @@
-package io.aeroh.one.api;
+package io.aeroh.android.api;
 
-import io.aeroh.one.models.Device;
+import io.aeroh.android.models.Device;
 
 import java.util.List;
 

@@ -1,11 +1,11 @@
-package io.aeroh.one;
+package io.aeroh.android;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.widget.TextView;
 
-import io.aeroh.one.models.Device;
+import io.aeroh.android.models.Device;
 
 public class DeviceActivity extends AppCompatActivity {
 

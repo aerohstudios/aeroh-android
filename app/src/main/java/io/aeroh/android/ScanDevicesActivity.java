@@ -1,4 +1,4 @@
-package io.aeroh.one;
+package io.aeroh.android;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

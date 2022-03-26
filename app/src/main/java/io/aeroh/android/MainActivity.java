@@ -1,6 +1,6 @@
-package io.aeroh.one;
+package io.aeroh.android;
 
-import io.aeroh.one.api.meta.Callback;
+import io.aeroh.android.api.meta.Callback;
 
 import androidx.appcompat.app.AppCompatActivity;
 

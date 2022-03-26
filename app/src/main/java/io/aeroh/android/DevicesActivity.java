@@ -1,4 +1,4 @@
-package io.aeroh.one;
+package io.aeroh.android;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,7 +17,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import io.aeroh.one.models.Device;
+import io.aeroh.android.models.Device;
 
 import java.util.List;
 

@@ -7,7 +7,7 @@ android {
     buildToolsVersion '30.0.3'
 
     defaultConfig {
-        applicationId "io.aeroh.one"
+        applicationId "io.aeroh.android"
         minSdkVersion 16
         targetSdkVersion 31
         versionCode 1

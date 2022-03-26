@@ -1,4 +1,4 @@
-package io.aeroh.one.models;
+package io.aeroh.android.models;
 
 import com.squareup.moshi.Json;
 
