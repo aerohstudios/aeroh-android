@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -25,26 +27,31 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("MainActivity", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
         Intent intent = getIntent();
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            Log.d("MainActivity", "Got code!");
             Uri uri = intent.getData();
             String code = uri.getQueryParameter("code");
             getAccessToken(code);
         } else {
+            Log.d("MainActivity", "Verify Access Token!");
             verifyAccessToken();
         }
     }
 
     void openLoginActivity() {
+        Log.d("MainActivity", "openLoginActivity");
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
         finish();
     }
 
     void openDevicesActivity() {
+        Log.d("MainActivity", "openDevicesActivity");
         Intent intent = new Intent(getApplicationContext(), DevicesActivity.class);
         startActivity(intent);
         finish();
@@ -54,25 +61,34 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
         String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
         if (access_token != null) {
+            Log.d("MainActivity", "access_token is present");
             ApiServer api_server = new ApiServer(access_token);
             api_server.isAuthenticated(new Callback() {
                 @Override
                 public void onSuccess() {
+                    Log.d("MainActivity", "access_token is valid");
                     openDevicesActivity();
                 }
 
                 @Override
-                public void onFailure() {
-                    shared_preferences.edit().remove("API_SERVER_ACCESS_TOKEN").apply();
-                    openLoginActivity();
+                public void onFailure(failureType type, String message) {
+                    if (type == failureType.INVALID_TOKEN) {
+                        shared_preferences.edit().remove("API_SERVER_ACCESS_TOKEN").apply();
+                        openLoginActivity();
+                    } else {
+                        Log.d("MainActivity", "request failed!");
+                        showErrorToast(message);
+                    }
                 }
             });
         } else {
+            Log.d("MainActivity", "access_token is null");
             openLoginActivity();
         }
     }
 
     void getAccessToken(String code) {
+        Log.d("MainActivity", "getAccessToken");
         Uri.Builder builder = new Uri.Builder();
         Uri uri = builder.scheme(BuildConfig.API_SERVER_SCHEME)
                 .encodedAuthority(BuildConfig.API_SERVER_HOST)
@@ -89,19 +105,31 @@ public class MainActivity extends AppCompatActivity {
 
         RequestQueue queue = Volley.newRequestQueue(this);
         Context context = getApplicationContext();
+        Log.d("MainActivity", "make request to the sever");
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, uri.toString(), new JSONObject(params), (JSONObject response) -> {
+            Log.d("MainActivity", "got response from the sever");
             try {
                 String access_token = response.getString("access_token");
                 SharedPreferences shared_preferences = context.getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
                 shared_preferences.edit().putString("API_SERVER_ACCESS_TOKEN", access_token).apply();
                 verifyAccessToken();
             } catch (Exception e) {
-                // TODO: Exception Handling
+                String message = e.getMessage();
+                Log.d("MainActivity", "exception occurred!");
+                showErrorToast(message);
             }
         }, (VolleyError error) -> {
-            // TODO: Exception Handling
+            Log.d("MainActivity", "request failed!");
+            String message = error.getMessage();
+            showErrorToast(message);
         });
 
         queue.add(jsonObjectRequest);
+    }
+
+    void showErrorToast(String message) {
+        Log.d("MainActivity", message);
+        Toast errorToast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+        errorToast.show();
     }
 }

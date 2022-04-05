@@ -1,5 +1,7 @@
 package io.aeroh.android;
 
+import android.util.Log;
+
 import io.aeroh.android.api.Devices;
 import io.aeroh.android.api.Users;
 import io.aeroh.android.api.meta.Callback;
@@ -58,22 +60,25 @@ public class ApiServer {
     }
 
     void isAuthenticated(Callback cb) {
+        Log.d("ApiServer", "isAuthenticated");
         Call<List<User>> call = this.users.list();
 
         call.enqueue(new retrofit2.Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, retrofit2.Response<List<User>> response) {
+                Log.d("ApiServer", "Got response");
                 int statusCode = response.code();
                 if (statusCode == 200) {
                     cb.onSuccess();
                 } else if (statusCode == 401) {
-                    cb.onFailure();
+                    cb.onFailure(Callback.failureType.INVALID_TOKEN, "Access token is not valid");
                 }
             }
 
             @Override
             public void onFailure(Call<List<User>> call, Throwable t) {
-                // log failure
+                Log.d("ApiServer", "Request failed");
+                cb.onFailure(Callback.failureType.SERVER_ERROR, t.getMessage());
             }
         });
     }
