@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +63,7 @@ public class DevicesActivity extends AppCompatActivity {
         devicesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Log.d("DevicesActivity", "List item clicked!");
                 Device device = devicesArrayAdapter.getItem(position);
                 Intent intent = new Intent(getApplicationContext(), DeviceActivity.class);
                 intent.putExtra("device", device);
@@ -73,7 +75,8 @@ public class DevicesActivity extends AppCompatActivity {
         btnAddDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), ScanDevicesActivity.class);
+                Log.d("DevicesActivity", "Add Device button clicked!");
+                Intent intent = new Intent(getApplicationContext(), RequestPermissionActivity.class);
                 startActivity(intent);
             }
         });

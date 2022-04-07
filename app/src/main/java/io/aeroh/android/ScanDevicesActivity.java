@@ -25,8 +25,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class ScanDevicesActivity extends AppCompatActivity {
-    BluetoothAdapter mBtAdapter;
-    BtBroadcastReceiver mBtReceiver;
+    BluetoothAdapter mBtAdapter = null;
+    BtBroadcastReceiver mBtReceiver = null;
 
     ScannedDevicesArrayAdapter mDevicesAdapter;
 
@@ -41,6 +41,17 @@ public class ScanDevicesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_devices);
 
+        Button btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("RequestPermissionActivity", "Back button clicked");
+                Intent intent = new Intent(getApplicationContext(), DevicesActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
         btnScan = findViewById(R.id.btnScan);
         btnScan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,7 +65,7 @@ public class ScanDevicesActivity extends AppCompatActivity {
         mDevicesAdapter = new ScannedDevicesArrayAdapter(getApplicationContext());
         devicesListView.setAdapter(mDevicesAdapter);
 
-        initDiscovery();
+        //initDiscovery();
     }
 
     private void initDiscovery() {
@@ -158,10 +169,12 @@ public class ScanDevicesActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         // Don't forget to unregister the ACTION_FOUND receiver.
-        if (mBtAdapter.isDiscovering()) {
+        if (mBtAdapter != null && mBtAdapter.isDiscovering()) {
             mBtAdapter.cancelDiscovery();
         }
-        unregisterReceiver(mBtReceiver);
+        if (mBtReceiver != null) {
+            unregisterReceiver(mBtReceiver);
+        }
     }
 
     @Override
