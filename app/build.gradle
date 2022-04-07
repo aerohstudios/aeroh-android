@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "io.aeroh.android"
-        minSdkVersion 16
+        minSdkVersion 23
         targetSdkVersion 31
         versionCode 1
         versionName "1.0"
@@ -45,10 +45,13 @@ dependencies {
     implementation 'com.squareup.moshi:moshi:1.4.0'
     implementation 'moe.banana:moshi-jsonapi:3.5.0'
     implementation 'moe.banana:moshi-jsonapi-retrofit-converter:3.5.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    implementation 'com.github.EspressifApp:lib-blufi-android:2.3.4'
 }
 
 def static getSecret(key) {
