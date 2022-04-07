@@ -53,9 +53,23 @@
         android:layout_marginEnd="20dp"
         android:textColor="@color/black"
         android:textSize="18sp"
-        android:text="Hello, looks like you have denied permissions just now or in the past, and therefore you won't be able to give permissions from within the app. You will have to set them manually by going to app settings page. Alternatively, you can uninstall the app and reinstall it. Sorry about the inconvenience."
+        android:text="Hello, looks like you have denied permissions just now or in the past, and therefore you won't be able to give permissions from within the app. You will have to set them manually by going to app info page, under permissions. Alternatively, you can uninstall the app and reinstall it. Sorry about the inconvenience."
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+
+    <Button
+        android:id="@+id/btnAppSettings"
+        style="@style/Widget.MaterialComponents.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="APP INFO"
+        android:textSize="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/requestText"
+        app:layout_constraintVertical_bias="0.043" />
 </androidx.constraintlayout.widget.ConstraintLayout>
