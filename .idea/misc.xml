@@ -11,9 +11,10 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19610507246376813" />
         <entry key="app/src/main/res/layout/activity_request_permission.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_scan_devices.xml" value="0.34148550724637683" />
-        <entry key="app/src/main/res/layout/activity_scanned_device.xml" value="0.19610507246376813" />
+        <entry key="app/src/main/res/layout/activity_scanned_device.xml" value="0.31636980491942324" />
         <entry key="app/src/main/res/layout/activity_set_manual_permission.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.13697916666666668" />
+        <entry key="app/src/main/res/layout/activity_wifi_credentials.xml" value="0.39688720703125" />
         <entry key="app/src/main/res/layout/devices_list_item.xml" value="0.34148550724637683" />
         <entry key="app/src/main/res/layout/devices_list_item_bg.xml" value="0.19610507246376813" />
         <entry key="app/src/main/res/layout/scanned_devices_list_item.xml" value="0.30444895426432295" />
