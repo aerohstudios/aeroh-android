@@ -6,19 +6,29 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+
+import java.util.Arrays;
+import java.util.HashMap;
+
 import io.aeroh.android.models.Device;
+
+import io.aeroh.android.utils.MQTTClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DeviceActivity extends AppCompatActivity {
+    MQTTClient mqttClient = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +40,33 @@ public class DeviceActivity extends AppCompatActivity {
         TextView device_name = (TextView) findViewById(R.id.device_name);
         device_name.setText(device.name);
 
+        createMQTTClient(device);
+
         Button btnTogglePower = (Button) findViewById(R.id.btnTogglePower);
+        btnTogglePower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String topic = String.format("%s/commands", device.thing_name);
+                String [] command = new String[] { "power", "toggle" };
+                JSONArray jsonCommand = new JSONArray(Arrays.asList(command));
+                String message = jsonCommand.toString();
+
+                if (mqttClient.isConnected()) {
+                    mqttClient.publish(topic, message);
+                } else {
+                    mqttClient.connect(new MQTTClient.Callback() {
+                        @Override
+                        public void onSuccess() {
+                            mqttClient.publish(topic, message);
+                        }
+
+                        @Override
+                        public void onFailure() {
+                        }
+                    });
+                }
+            }
+        });
 
         Button btnRemoveDevice = (Button) findViewById(R.id.btnRemoveDevice);
         btnRemoveDevice.setOnClickListener(new View.OnClickListener() {
@@ -71,5 +107,26 @@ public class DeviceActivity extends AppCompatActivity {
                         setNegativeButton(android.R.string.no, null).show();
             }
         });
+    }
+
+    void createMQTTClient(Device device) {
+        Uri mqttUri = Uri.parse(device.mqtt_uri);
+        String host = mqttUri.getHost();
+        String scheme = "wss";
+        int port = 443;
+        String mqttUriStr = String.format("%s://%s:%d", scheme, host, port);
+
+        HashMap<String, String> headers = new HashMap<String, String>();
+
+        SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
+        String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
+        if (access_token != null) {
+            headers.put("X-Aeroh-Oauth2-Access-Token", access_token);
+        }
+
+        String[] aerohDevices = new String[] { device.thing_name };
+        headers.put("X-Aeroh-Devices", TextUtils.join(",", aerohDevices));
+
+        mqttClient = new MQTTClient(getApplicationContext(), mqttUriStr, headers);
     }
 }
