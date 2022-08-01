@@ -53,8 +53,9 @@ dependencies {
 
     implementation 'com.github.EspressifApp:lib-blufi-android:2.3.4'
 
-    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2'
-    implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.0.2'
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
+    implementation 'com.github.hannesa2:paho.mqtt.android:3.3.5'
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
 }
 
 def static getSecret(key) {

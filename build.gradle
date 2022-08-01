@@ -20,7 +20,7 @@ allprojects {
 
         maven { url 'https://jitpack.io' }
         maven {
-            url 'https://repo.eclipse.org/content/repositories/paho-snapshots/'
+            url 'https://repo.eclipse.org/content/repositories/paho-releases/'
         }
     }
 }
