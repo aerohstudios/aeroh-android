@@ -2,6 +2,7 @@ package io.aeroh.android.utils;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
 import android.util.Log;
 
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -65,8 +66,8 @@ public class MQTTClient {
     }
 
     public interface Callback {
-        void onSuccess();
-        void onFailure();
+        void onSuccess(IMqttToken asyncActionToken);
+        void onFailure(IMqttToken asyncActionToken, Throwable exception);
     }
 
     public void connect(Callback callback) {
@@ -75,33 +76,48 @@ public class MQTTClient {
             @Override
             public void onSuccess(IMqttToken asyncActionToken) {
                 Log.i("MQTT Client", "connect succeed");
-                callback.onSuccess();
+                callback.onSuccess(asyncActionToken);
             }
 
             @Override
             public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                 Log.i("MQTT Client", "connect failed");
                 exception.printStackTrace();
-                callback.onFailure();
+                callback.onFailure(asyncActionToken, exception);
             }
         });
 
         Log.i("MQTT Client", "Initiated MQTT Connect with Callback");
     }
 
-    public void publish(String topic, String messageStr) {
+    public void publish(String topic, String messageStr, Callback callback) {
         MqttMessage message = new MqttMessage();
         message.setPayload(messageStr.getBytes());
         message.setQos(0);
         mqttClient.publish(topic, message, null, new IMqttActionListener() {
             @Override
             public void onSuccess(IMqttToken asyncActionToken) {
-                Log.i("MQTT Client", "publish succeed!");
+                // doing additional checks because paho doesn't report failures
+                // likely due to this issue reported in the python library:
+                // https://github.com/eclipse/paho.mqtt.python/issues/440
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+                        Log.i("MQTT Client IsConnected", String.format("%b at 300ms", mqttClient.isConnected()));
+                        if (mqttClient.isConnected()) {
+
+                            Log.i("MQTT Client", "publish succeed!");
+                            callback.onSuccess(asyncActionToken);
+                        } else {
+                            callback.onFailure(asyncActionToken, new Exception("Likely Authorization Error"));
+                        }
+                    }
+                }, 300);
             }
 
             @Override
             public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                 Log.i("MQTT Client", "publish failed!");
+                callback.onFailure(asyncActionToken, exception);
             }
         });
     }

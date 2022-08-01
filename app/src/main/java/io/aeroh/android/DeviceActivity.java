@@ -13,7 +13,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.json.JSONArray;
 
 import java.util.Arrays;
@@ -46,22 +48,38 @@ public class DeviceActivity extends AppCompatActivity {
         btnTogglePower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                view.setEnabled(false);
                 String topic = String.format("%s/commands", device.thing_name);
                 String [] command = new String[] { "power", "toggle" };
                 JSONArray jsonCommand = new JSONArray(Arrays.asList(command));
                 String message = jsonCommand.toString();
 
+                MQTTClient.Callback publishCallback = new MQTTClient.Callback() {
+                    @Override
+                    public void onSuccess(IMqttToken asyncActionToken) {
+                        view.setEnabled(true);
+                    }
+
+                    @Override
+                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                        view.setEnabled(true);
+                        Toast.makeText(context, "Failed to publish message on MQTT Server!", Toast.LENGTH_SHORT).show();
+                    }
+                };
+
                 if (mqttClient.isConnected()) {
-                    mqttClient.publish(topic, message);
+                    mqttClient.publish(topic, message, publishCallback);
                 } else {
                     mqttClient.connect(new MQTTClient.Callback() {
                         @Override
-                        public void onSuccess() {
-                            mqttClient.publish(topic, message);
+                        public void onSuccess(IMqttToken asyncActionToken) {
+                            mqttClient.publish(topic, message, publishCallback);
                         }
 
                         @Override
-                        public void onFailure() {
+                        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                            view.setEnabled(true);
+                            Toast.makeText(context, "Failed to connect to MQTT Server!", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
