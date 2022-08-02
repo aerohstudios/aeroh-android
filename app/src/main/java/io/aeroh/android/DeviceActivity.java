@@ -31,6 +31,22 @@ import retrofit2.Response;
 
 public class DeviceActivity extends AppCompatActivity {
     MQTTClient mqttClient = null;
+    Device device = null;
+
+    @Override
+    protected void onStop() {
+        Log.i("Device Activity", "onStop called");
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.i("Device Activity", "onDestroy called");
+        if (mqttClient != null && mqttClient.isConnected()) {
+            mqttClient.disconnect();
+        }
+        super.onDestroy();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +54,9 @@ public class DeviceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_device);
         Context context = this;
 
-        Device device = (Device) getIntent().getExtras().get("device");
+        device = (Device) getIntent().getExtras().get("device");
         TextView device_name = (TextView) findViewById(R.id.device_name);
+        Log.i("DeviceActivity", String.format("Creating activity for device: %s", device.thing_name));
         device_name.setText(device.name);
 
         createMQTTClient(device);

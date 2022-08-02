@@ -125,4 +125,8 @@ public class MQTTClient {
     public boolean isConnected() {
         return mqttClient.isConnected();
     }
+
+    public void disconnect() {
+        mqttClient.disconnect();
+    }
 }
