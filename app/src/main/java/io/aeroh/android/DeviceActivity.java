@@ -65,41 +65,17 @@ public class DeviceActivity extends AppCompatActivity {
         btnTogglePower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                view.setEnabled(false);
-                String topic = String.format("%s/commands", device.thing_name);
                 String [] command = new String[] { "power", "toggle" };
-                JSONArray jsonCommand = new JSONArray(Arrays.asList(command));
-                String message = jsonCommand.toString();
+                attachBtnMQTTOnClickListener(view, context, device, command);
+            }
+        });
 
-                MQTTClient.Callback publishCallback = new MQTTClient.Callback() {
-                    @Override
-                    public void onSuccess(IMqttToken asyncActionToken) {
-                        view.setEnabled(true);
-                    }
-
-                    @Override
-                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                        view.setEnabled(true);
-                        Toast.makeText(context, "Failed to publish message on MQTT Server!", Toast.LENGTH_SHORT).show();
-                    }
-                };
-
-                if (mqttClient.isConnected()) {
-                    mqttClient.publish(topic, message, publishCallback);
-                } else {
-                    mqttClient.connect(new MQTTClient.Callback() {
-                        @Override
-                        public void onSuccess(IMqttToken asyncActionToken) {
-                            mqttClient.publish(topic, message, publishCallback);
-                        }
-
-                        @Override
-                        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                            view.setEnabled(true);
-                            Toast.makeText(context, "Failed to connect to MQTT Server!", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+        Button btnSpeedChange = (Button) findViewById(R.id.btnSpeedChange);
+        btnSpeedChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String [] command = new String[] { "speed", "change" };
+                attachBtnMQTTOnClickListener(view, context, device, command);
             }
         });
 
@@ -142,6 +118,44 @@ public class DeviceActivity extends AppCompatActivity {
                         setNegativeButton(android.R.string.no, null).show();
             }
         });
+    }
+
+    void attachBtnMQTTOnClickListener(View view, Context context, Device device, String[] command) {
+        view.setEnabled(false);
+
+        String topic = String.format("%s/commands", device.thing_name);
+        JSONArray jsonCommand = new JSONArray(Arrays.asList(command));
+        String message = jsonCommand.toString();
+
+        MQTTClient.Callback publishCallback = new MQTTClient.Callback() {
+            @Override
+            public void onSuccess(IMqttToken asyncActionToken) {
+                view.setEnabled(true);
+            }
+
+            @Override
+            public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                view.setEnabled(true);
+                Toast.makeText(context, "Failed to publish message on MQTT Server!", Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        if (mqttClient.isConnected()) {
+            mqttClient.publish(topic, message, publishCallback);
+        } else {
+            mqttClient.connect(new MQTTClient.Callback() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    mqttClient.publish(topic, message, publishCallback);
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    view.setEnabled(true);
+                    Toast.makeText(context, "Failed to connect to MQTT Server!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     void createMQTTClient(Device device) {
