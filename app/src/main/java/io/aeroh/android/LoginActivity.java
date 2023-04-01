@@ -25,7 +25,7 @@ public class LoginActivity extends AppCompatActivity {
                     .appendQueryParameter("client_id", BuildConfig.API_SERVER_CLIENT_ID)
                     .appendQueryParameter("redirect_uri", BuildConfig.API_SERVER_REDIRECT_URI)
                     .appendQueryParameter("response_type", "code")
-                    .appendQueryParameter("scope", "mobile").build();
+                    .appendQueryParameter("scope", "basic_info read_devices write_devices control_devices").build();
 
             Intent login_intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(login_intent);
