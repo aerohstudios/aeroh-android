@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
     buildToolsVersion '30.0.3'
 
     defaultConfig {
         applicationId "io.aeroh.android"
         minSdkVersion 23
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
 
@@ -56,6 +56,13 @@ dependencies {
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     implementation 'com.github.hannesa2:paho.mqtt.android:3.3.5'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
+
+    implementation "androidx.activity:activity:1.7.0"
+    implementation "androidx.fragment:fragment:1.5.6"
+
+    configurations.implementation {
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+    }
 }
 
 def static getSecret(key) {
