@@ -16,9 +16,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -192,46 +194,71 @@ public class ScannedDeviceActivity extends AppCompatActivity {
         ApiServer api_server = new ApiServer(access_token);
         Device device = new Device();
         device.mac_addr = mDevice.getAddress();
-        device.name = "Aeroh One";
 
-        Log.d("ScannedDeviceActivity", "Create Create Device Post Request");
-        Call<Device> call = api_server.devices.post(device);
-        Log.d("ScannedDeviceActivity", "Enqueue Create Device Post Request");
-        call.enqueue(new Callback<Device>() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("What do you want to call this device?");
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        input.setText("Aeroh Link");
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
-            public void onResponse(Call<Device> call, Response<Device> response) {
-                int statusCode = response.code();
-                if (statusCode == 201) {
-                    Log.d("ScannedDeviceActivity", String.format("Post Response: 201"));
-                    newDevice = response.body();
+            public void onClick(DialogInterface dialog, int which) {
+                device.name = input.getText().toString();
+                Log.d("ScannedDeviceActivity", "Create Create Device Post Request");
+                Call<Device> call = api_server.devices.post(device);
+                Log.d("ScannedDeviceActivity", "Enqueue Create Device Post Request");
+                call.enqueue(new Callback<Device>() {
+                    @Override
+                    public void onResponse(Call<Device> call, Response<Device> response) {
+                        int statusCode = response.code();
+                        if (statusCode == 201) {
+                            Log.d("ScannedDeviceActivity", String.format("Post Response: 201"));
+                            newDevice = response.body();
 
-                    String string_payload = null;
-                    try {
-                        string_payload = new JSONObject().
-                                put("certificate_pem", newDevice.certificate_pem).
-                                put("certificate_public_key", newDevice.certificate_public_key).
-                                put("certificate_private_key", newDevice.certificate_private_key).
-                                put("root_ca", newDevice.root_ca).
-                                put("mqtt_uri", newDevice.mqtt_uri).
-                                put("thing_name", newDevice.thing_name).toString();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                            String string_payload = null;
+                            try {
+                                string_payload = new JSONObject().
+                                        put("certificate_pem", newDevice.certificate_pem).
+                                        put("certificate_public_key", newDevice.certificate_public_key).
+                                        put("certificate_private_key", newDevice.certificate_private_key).
+                                        put("root_ca", newDevice.root_ca).
+                                        put("mqtt_uri", newDevice.mqtt_uri).
+                                        put("thing_name", newDevice.thing_name).toString();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            mBlufiClient.postCustomData(string_payload.getBytes());
+                        } else if (statusCode == 401) {
+                            // TODO: Redirect to Login
+                            Log.d("ScannedDeviceActivity", String.format("Post Response Failure: 401"));
+                        } else {
+                            Log.d("ScannedDeviceActivity", String.format("Post Response Failure: %d", statusCode));
+                        }
                     }
-                    mBlufiClient.postCustomData(string_payload.getBytes());
-                } else if (statusCode == 401) {
-                    // TODO: Redirect to Login
-                    Log.d("ScannedDeviceActivity", String.format("Post Response Failure: 401"));
-                } else {
-                    Log.d("ScannedDeviceActivity", String.format("Post Response Failure: %d", statusCode));
-                }
-            }
 
-            @Override
-            public void onFailure(Call<Device> call, Throwable t) {
-                // TODO: Show Server Error
-                Log.d("ScannedDeviceActivity", String.format("Post Response Failure: 5XX"));
+                    @Override
+                    public void onFailure(Call<Device> call, Throwable t) {
+                        // TODO: Show Server Error
+                        Log.d("ScannedDeviceActivity", String.format("Post Response Failure: 5XX"));
+                    }
+                });
             }
         });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                finish();
+            }
+        });
+
+        builder.show();
     }
 
     private void updateMessage(String message, boolean isNotificaiton) {
