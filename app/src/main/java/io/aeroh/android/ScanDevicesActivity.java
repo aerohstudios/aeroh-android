@@ -57,7 +57,7 @@ public class ScanDevicesActivity extends AppCompatActivity {
     private ExecutorService mThreadPool;
     private Future mUpdateFuture;
 
-    private String mBlufiFilter = "BLUFI";
+    private String mBlufiFilter = "Aeroh";
 
     private boolean bt_scan_permission_granted = false;
     private boolean bt_connect_permission_granted = false;
