@@ -11,6 +11,7 @@ import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface Devices {
@@ -22,6 +23,9 @@ public interface Devices {
 
     @POST("devices")
     Call<Device> post(@Body Device device);
+
+    @PUT("devices/{id}")
+    Call<Device> put(@Path("id") String deviceId, @Body Device device);
 
     @DELETE("devices/{id}")
     Call<ResponseBody> delete(@Path("id") String deviceId);

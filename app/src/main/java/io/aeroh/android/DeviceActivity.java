@@ -1,5 +1,9 @@
 package io.aeroh.android;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -80,16 +84,31 @@ public class DeviceActivity extends AppCompatActivity {
             }
         });
 
+
+        ActivityResultLauncher<Intent> settingsActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == DeviceSettingsActivity.RESULT_RENAMED) {
+                            Log.d("DeviceAcivity", "Renamed");
+                            Intent data = result.getData();
+                            device_name.setText(data.getExtras().getString("device_name"));
+                        } else if (result.getResultCode() == DeviceSettingsActivity.RESULT_DELETED) {
+                            Log.d("DeviceAcivity", "Deleted! Destroying Activity!");
+                            finish();
+                        }
+                    }
+                });
+
         Button btnDeviceSettings = (Button) findViewById(R.id.btnDeviceSettings);
         btnDeviceSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Find out if the current device is removed!
-
                 Log.d("DeviceActivity", "Show DeviceSettingsActivity!");
                 Intent intent = new Intent(getApplicationContext(), DeviceSettingsActivity.class);
                 intent.putExtra("device", device);
-                startActivity(intent);
+                settingsActivityResultLauncher.launch(intent);
             }
         });
     }
