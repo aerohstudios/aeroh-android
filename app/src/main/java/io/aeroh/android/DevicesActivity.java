@@ -29,7 +29,6 @@ import retrofit2.Response;
 public class DevicesActivity extends AppCompatActivity {
     ListView devicesListView;
     DevicesArrayAdapter devicesArrayAdapter;
-    int deviceRequestCode = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +45,7 @@ public class DevicesActivity extends AppCompatActivity {
                 Device device = devicesArrayAdapter.getItem(position);
                 Intent intent = new Intent(getApplicationContext(), DeviceActivity.class);
                 intent.putExtra("device", device);
-                startActivityForResult(intent, deviceRequestCode);
+                startActivity(intent);
             }
         });
 
@@ -118,18 +117,6 @@ public class DevicesActivity extends AppCompatActivity {
             name.setText(device.name);
             mac_addr.setText(device.mac_addr);
             return convertView;
-        }
-    }
-
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == deviceRequestCode) {
-            if (resultCode == RESULT_OK) {
-                Log.d("DevicesActivity", "Reloading UI");
-                finish();
-                overridePendingTransition(0, 0);
-                startActivity(getIntent());
-                overridePendingTransition(0, 0);
-            }
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -79,43 +80,16 @@ public class DeviceActivity extends AppCompatActivity {
             }
         });
 
-        Button btnRemoveDevice = (Button) findViewById(R.id.btnRemoveDevice);
-        btnRemoveDevice.setOnClickListener(new View.OnClickListener() {
+        Button btnDeviceSettings = (Button) findViewById(R.id.btnDeviceSettings);
+        btnDeviceSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new AlertDialog.Builder(context).
-                        setTitle("Confirm Deletion").
-                        setMessage("Proceed to delete the device called " + device.name + " with id " + device.mac_addr + " from your account?").
-                        setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                new AlertDialog.Builder(context).
-                                    setTitle("Confirm Deletion").
-                                    setMessage("You will not be able to undo this action. Ok to proceed?").
-                                    setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int whichButton) {
-                                            SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
-                                            String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
-                                            if (access_token != null) {
-                                                ApiServer api_server = new ApiServer(access_token);
-                                                Call<ResponseBody> call = api_server.devices.delete(device.getId());
-                                                call.enqueue(new Callback<ResponseBody>() {
-                                                    @Override
-                                                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                                        Log.d("DeviceActivity", "Got response: " + String.valueOf(response.code()));
-                                                        setResult(RESULT_OK);
-                                                        finish();
-                                                    }
+                // TODO: Find out if the current device is removed!
 
-                                                    @Override
-                                                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-                                                    }
-                                                });
-                                            }
-                                        }}).
-                                    setNegativeButton(android.R.string.no, null).show();
-                            }}).
-                        setNegativeButton(android.R.string.no, null).show();
+                Log.d("DeviceActivity", "Show DeviceSettingsActivity!");
+                Intent intent = new Intent(getApplicationContext(), DeviceSettingsActivity.class);
+                intent.putExtra("device", device);
+                startActivity(intent);
             }
         });
     }
