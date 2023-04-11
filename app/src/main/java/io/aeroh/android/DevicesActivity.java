@@ -33,29 +33,7 @@ public class DevicesActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
-        String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
-        if (access_token != null) {
-            ApiServer api_server = new ApiServer(access_token);
-            Call<List<Device>> call = api_server.devices.list();
-            call.enqueue(new Callback<List<Device>>() {
-                @Override
-                public void onResponse(Call<List<Device>> call, Response<List<Device>> response) {
-                    int statusCode = response.code();
-                    if (statusCode == 200) {
-                        List<Device> devices = response.body();
-                        populateDevicesList(devices);
-                    } else if (statusCode == 401) {
-                        // TODO: Redirect to Login
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<List<Device>> call, Throwable t) {
-                    // TODO: Show Server Error
-                }
-            });
-        }
+        updateDevicesList();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_devices);
@@ -81,6 +59,38 @@ public class DevicesActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateDevicesList();
+    }
+
+    void updateDevicesList() {
+        SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
+        String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
+        if (access_token != null) {
+            ApiServer api_server = new ApiServer(access_token);
+            Call<List<Device>> call = api_server.devices.list();
+            call.enqueue(new Callback<List<Device>>() {
+                @Override
+                public void onResponse(Call<List<Device>> call, Response<List<Device>> response) {
+                    int statusCode = response.code();
+                    if (statusCode == 200) {
+                        List<Device> devices = response.body();
+                        populateDevicesList(devices);
+                    } else if (statusCode == 401) {
+                        // TODO: Redirect to Login
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Device>> call, Throwable t) {
+                    // TODO: Show Server Error
+                }
+            });
+        }
     }
 
     void populateDevicesList(List<Device> devices) {
