@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Aeroh</string>
+    <string name="aeroh_link">Aeroh Link</string>
+    <string name="aeroh_desc">Make your home smarter with Aeroh Link</string>
 </resources>

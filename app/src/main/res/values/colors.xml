@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primary_yellow">#FEC93A</color>
+    <color name="secondary_black">#100E14</color>
+    <color name="text_color">#BEBEBF</color>
     <color name="yellow_brand">#FFFEC93A</color>
     <color name="yellow_ncs">#FFFFD300</color>
     <color name="yellow_munsell">#FFEFCC00</color>
@@ -10,7 +13,6 @@
     <color name="yellow_crayola">#FFFFAA1D</color>
     <color name="black">#FF111111</color>
     <color name="white">#FFFFFFFF</color>
-
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
 </resources>
