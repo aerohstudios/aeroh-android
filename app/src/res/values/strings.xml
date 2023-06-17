@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Aeroh</string>
+    <string name="login_text">Log in</string>
+    <string name="email_input_holder">Email</string>
+    <string name="password_input_holder">Password</string>
+    <string name="sign_up_text">Sign up</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="or">or</string>
+</resources>
