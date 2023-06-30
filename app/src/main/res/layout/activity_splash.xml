@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/yellow_brand">
+    android:background="@color/primary_yellow">
 
     <ImageView
-        android:id="@+id/aeroh_black_logo"
-        app:srcCompat="@drawable/aeroh_black_logo"
+        android:id="@+id/aeroh_splash_screen_logo"
+        app:srcCompat="@drawable/aeroh_splash_screen_logo"
         android:layout_width="180dp"
-        android:layout_height="wrap_content"
+        android:layout_height="180dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

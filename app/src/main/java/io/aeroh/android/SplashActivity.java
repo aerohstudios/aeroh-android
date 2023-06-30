@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -23,7 +24,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,13 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
+    void openOnboardActivity() {
+        Log.d("SplashActivity", "openOnboardActivity");
+        Intent intent = new Intent(getApplicationContext(), OnboardActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     void verifyAccessToken() {
         SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
         String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
@@ -83,7 +91,12 @@ public class MainActivity extends AppCompatActivity {
             });
         } else {
             Log.d("MainActivity", "access_token is null");
-            openLoginActivity();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    openOnboardActivity();
+                }
+            }, 2000);
         }
     }
 
