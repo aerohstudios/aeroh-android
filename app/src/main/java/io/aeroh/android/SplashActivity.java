@@ -9,7 +9,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -23,13 +27,18 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("MainActivity", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        // Animation for the Splash Screen Logo.
+        ImageView splash_logo = findViewById(R.id.splash_logo);
+        Animation fade_in_and_grow = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in_and_grow);
+        splash_logo.startAnimation(fade_in_and_grow);
 
         Intent intent = getIntent();
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
@@ -83,7 +92,12 @@ public class MainActivity extends AppCompatActivity {
             });
         } else {
             Log.d("MainActivity", "access_token is null");
-            openLoginActivity();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    openLoginActivity();
+                }
+            }, 2500);
         }
     }
 
