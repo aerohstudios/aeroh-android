@@ -23,6 +23,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AerohAndroid">
         <activity
+            android:name=".SignupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OnboardingActivity"
+            android:exported="false" />
+        <activity
             android:name=".DeviceSettingsActivity"
             android:exported="false">
             <meta-data
@@ -51,13 +57,13 @@
             android:name=".DeviceActivity"
             android:exported="true" />
 
-        <service android:name="org.eclipse.paho.android.service.MqttService"></service>
+        <service android:name="org.eclipse.paho.android.service.MqttService" />
 
         <activity android:name=".DevicesActivity" />
         <activity
             android:name=".SplashActivity"
-            android:theme="@style/Theme.SplashActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

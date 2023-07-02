@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Aeroh</string>
+    <string name="aeroh_link_string">Aeroh Link</string>
+    <string name="aeroh_slogan">Make your home smarter with Aeroh link.</string>
+    <string name="sign_up_button_txt">Sign up</string>
+    <string name="login_button_txt">Login</string>
 </resources>
