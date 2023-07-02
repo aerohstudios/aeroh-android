@@ -66,6 +66,13 @@ public class SplashActivity extends AppCompatActivity {
         finish();
     }
 
+    void openOnboardActivity() {
+        Log.d("SplashActivity", "openOnboardActivity");
+        Intent intent = new Intent(SplashActivity.this, OnboardingActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     void verifyAccessToken() {
         SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
         String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
@@ -95,7 +102,7 @@ public class SplashActivity extends AppCompatActivity {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    openLoginActivity();
+                    openOnboardActivity();
                 }
             }, 2500);
         }
