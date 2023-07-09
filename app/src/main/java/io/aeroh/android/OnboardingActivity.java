@@ -40,4 +40,5 @@ public class OnboardingActivity extends AppCompatActivity {
             }, delay);
 
         });
-}}
+    }
+}
