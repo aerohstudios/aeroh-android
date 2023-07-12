@@ -3,5 +3,10 @@
     <string name="aeroh_link_string">Aeroh Link</string>
     <string name="aeroh_slogan">Make your home smarter with Aeroh link.</string>
     <string name="sign_up_button_txt">Sign up</string>
-    <string name="login_button_txt">Login</string>
+    <string name="login_txt">Log in</string>
+    <string name="or_txt">OR</string>
+    <string name="forgot_password_txt">Forgot Password?</string>
+    <string name="email_txt">Email</string>
+    <string name="password_txt">Password</string>
+    <string name="name_txt">Name</string>
 </resources>
