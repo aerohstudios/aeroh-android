@@ -2,9 +2,9 @@
 <resources>
     <color name="primary_yellow">#FEC93A</color>
     <color name="secondary_black">#100E14</color>
-    <color name="text_color_grey">#BEBEBF</color>
-    <color name="text_color_yellow">#FFC83A</color>
-    <color name="text_color_white">#FFFFFF</color>
+    <color name="grey">#BEBEBF</color>
+    <color name="yellow">#FFC83A</color>
+    <color name="white">#FFFFFF</color>
     <color name="yellow_brand">#FFFEC93A</color>
     <color name="yellow_ncs">#FFFFD300</color>
     <color name="yellow_munsell">#FFEFCC00</color>
