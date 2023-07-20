@@ -16,6 +16,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "API_SERVER_HOST", '"cloud.aeroh.org"'
+        buildConfigField "String", "API_LOCAL_HOST", '"http://10.0.2.2:3000"'
         buildConfigField "String", "API_SERVER_SCHEME", '"https"'
         buildConfigField "String", "API_SERVER_CLIENT_ID", getSecret("API_SERVER_CLIENT_ID")
         buildConfigField "String", "API_SERVER_CLIENT_SECRET", getSecret("API_SERVER_CLIENT_SECRET")

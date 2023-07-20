@@ -60,23 +60,25 @@
             android:background="@drawable/button_background_stroke"
             android:text="@string/sign_up_button_txt"
             android:textAllCaps="false"
+            android:gravity="center"
+            android:textAlignment="center"
             android:textSize="16sp"
             android:textColor="@color/white"
             android:layout_marginEnd="10dp"
-            android:layout_marginStart="15dp"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:layout_marginStart="15dp" />
 
         <Button
-            android:id="@+id/loginbtn"
+            android:id="@+id/login_button"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:background="@drawable/button_background_stroke_yellow"
             android:text="@string/login_txt"
             android:textAllCaps="false"
             android:textSize="16sp"
+            android:gravity="center"
+            android:textAlignment="center"
             android:textColor="@color/black"
             android:layout_marginStart="10dp"
-            android:layout_marginEnd="15dp"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:layout_marginEnd="15dp" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
