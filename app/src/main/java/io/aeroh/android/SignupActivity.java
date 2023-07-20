@@ -29,6 +29,8 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import io.aeroh.android.models.User;
+
 public class SignupActivity extends AppCompatActivity {
 
     private static final String SCOPE_MOBILE = "mobile";
@@ -118,12 +120,13 @@ public class SignupActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         Log.d("SignupResponse", response);
                         try {
-                            //
-                            JSONObject user_access = new JSONObject(response);
-                            String access_token = user_access.getString("access_token");
-                            String refresh_token = user_access.getString("refresh_token");
-                            long access_token_created_at = user_access.getLong("created_at");
-                            int access_token_expires_in = user_access.getInt("expires_in");
+                            //Handling JSON Response
+                            JSONObject Server_response = new JSONObject(response);
+                            JSONObject User_data = new JSONObject(Server_response.getString("data"));
+                            String access_token = User_data.getString("access_token");
+                            String refresh_token = User_data.getString("refresh_token");
+                            long access_token_created_at = User_data.getLong("created_at");
+                            int access_token_expires_in = User_data.getInt("expires_in");
 
                             //adding the user access data to the shared preferences
                             SharedPreferences user_access_preferences = getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
