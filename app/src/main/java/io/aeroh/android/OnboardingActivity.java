@@ -5,8 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 
 public class OnboardingActivity extends AppCompatActivity {
@@ -21,7 +19,7 @@ public class OnboardingActivity extends AppCompatActivity {
 
 
         sign_up_button = findViewById(R.id.signupbtn);
-        login_button = findViewById(R.id.loginbtn);
+        login_button = findViewById(R.id.login_button);
 
         sign_up_button.setOnClickListener(v -> {
             Handler handler = new Handler();
