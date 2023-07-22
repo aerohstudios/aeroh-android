@@ -31,6 +31,8 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import io.aeroh.android.utils.HelperMethods;
+
 public class LoginActivity extends AppCompatActivity {
 
     private static final int Delay = 500;
@@ -41,10 +43,10 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Button LoginButton = findViewById(R.id.login_flow);
-        Button SignupButton = findViewById(R.id.sign_up);
-        EditText Email_Field = findViewById(R.id.user_email);
-        EditText Password_Field = findViewById(R.id.user_password);
+        Button LoginButton = findViewById(R.id.login_button);
+        Button SignupButton = findViewById(R.id.signupbtn);
+        EditText emailField = findViewById(R.id.user_email);
+        EditText passwordField = findViewById(R.id.user_password);
 
         // Initialize the RequestQueue
         requestQueue = Volley.newRequestQueue(this);
@@ -52,14 +54,14 @@ public class LoginActivity extends AppCompatActivity {
         LoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String User_Email = Email_Field.getText().toString();
-                String User_Password = Password_Field.getText().toString();
+                String userEmail = emailField.getText().toString();
+                String userPassword = passwordField.getText().toString();
                 long timestamps = System.currentTimeMillis() / 1000;
-                String hmacSignature = genHmacSignature(User_Email, User_Password, timestamps);
+                String hmacSignature = HelperMethods.GenLoginPayloadSignature(userEmail, userPassword, timestamps);
 
-                if (!TextUtils.isEmpty(User_Email) && !TextUtils.isEmpty(User_Password)) {
+                if (!TextUtils.isEmpty(userEmail) && !TextUtils.isEmpty(userPassword)) {
                     String clientId = BuildConfig.API_SERVER_CLIENT_ID;
-                    makeApiCall(User_Email, User_Password, timestamps, clientId, hmacSignature);
+                    makeLoginApiCall(userEmail, userPassword, timestamps, clientId, hmacSignature);
                 } else {
                     Toast.makeText(LoginActivity.this, "Please fill all details", Toast.LENGTH_SHORT).show();
                 }
@@ -75,43 +77,11 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private String genHmacSignature(String Email, String Password, long timestamp) {
-        String delimiter = "|";
-        String payloadString = Email + delimiter + Password + delimiter + SCOPE_MOBILE + delimiter + timestamp;
-        try {
-            // Specified the HMAC Algorithm
-            String algorithm = "HmacSHA256";
 
-            // Use your own secret key
-            String secretKey = BuildConfig.API_SERVER_CLIENT_SECRET;
 
-            // Creating the HMAC SHA256 Object with the secret key
-            SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), algorithm);
-            Mac HmacSHA256 = Mac.getInstance(algorithm);
-            HmacSHA256.init(keySpec);
-
-            // Generating HMAC Signature
-            byte[] signatureBytes = HmacSHA256.doFinal(payloadString.getBytes(StandardCharsets.UTF_8));
-
-            // Converting the byte array to a hexadecimal string
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : signatureBytes) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private void makeApiCall(String Email, String Password, Long timestamp, String clientId, String signature) {
+    private void makeLoginApiCall(String Email, String Password, Long timestamp, String clientId, String signature) {
         // API endpoint
-        String url = BuildConfig.API_LOCAL_HOST + "/users/sign_in";
+        String url = BuildConfig.API_SERVER_SCHEME + "://" + BuildConfig.API_SERVER_HOST + "/users/sign_in";
 
         // Creating Request Body as a JSON string
         JSONObject json = new JSONObject();
@@ -126,30 +96,30 @@ public class LoginActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        final String requestBody = json.toString();
+        final String loginRequestBody = json.toString();
 
         // Creating the StringRequest
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+        StringRequest loginRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.d("Message", response);
                         try {
                             //Handling JSON Response
-                            JSONObject Server_response = new JSONObject(response);
-                            JSONObject User_data = new JSONObject(Server_response.getString("data"));
-                            String access_token = User_data.getString("access_token");
-                            String refresh_token = User_data.getString("refresh_token");
-                            long access_token_created_at = User_data.getLong("created_at");
-                            int access_token_expires_in = User_data.getInt("expires_in");
+                            JSONObject serverResponse = new JSONObject(response);
+                            JSONObject userData = new JSONObject(serverResponse.getString("data"));
+                            String accessToken = userData.getString("access_token");
+                            String refreshToken = userData.getString("refresh_token");
+                            long accessTokenCreatedAt = userData.getLong("created_at");
+                            int accessTokenExpiresIn = userData.getInt("expires_in");
 
                             //adding the user access data to the shared preferences
                             SharedPreferences user_access_preferences = getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = user_access_preferences.edit();
-                            editor.putString("access_token", access_token);
-                            editor.putString("refresh_token", refresh_token);
-                            editor.putLong("access_token_created_at", access_token_created_at);
-                            editor.putInt("access_token_expires_in", access_token_expires_in);
+                            editor.putString("access_token", accessToken);
+                            editor.putString("refresh_token", refreshToken);
+                            editor.putLong("access_token_created_at", accessTokenCreatedAt);
+                            editor.putInt("access_token_expires_in", accessTokenExpiresIn);
                             editor.apply();
 
                             //Showing the Devices Activity
@@ -185,11 +155,11 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public byte[] getBody() {
-                return requestBody.getBytes(StandardCharsets.UTF_8);
+                return loginRequestBody.getBytes(StandardCharsets.UTF_8);
             }
         };
 
         // Adding the request to RequestQueue
-        requestQueue.add(stringRequest);
+        requestQueue.add(loginRequest);
     }
 }

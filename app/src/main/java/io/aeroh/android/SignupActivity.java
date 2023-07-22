@@ -23,81 +23,45 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import io.aeroh.android.models.User;
+import io.aeroh.android.utils.HelperMethods;
 
 public class SignupActivity extends AppCompatActivity {
 
     private static final String SCOPE_MOBILE = "mobile";
     private static final int Delay = 500;
     RequestQueue requestQueue;
-    Button signupButton;
-    EditText User_Name, User_Email, User_Password;
+    Button signupButton, loginButton;
+    EditText userName, userEmail, userPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         requestQueue = Volley.newRequestQueue(this);
-        signupButton = findViewById(R.id.sign_up_btn);
-        User_Name = findViewById(R.id.nameInput);
-        User_Email = findViewById(R.id.emailInput);
-        User_Password = findViewById(R.id.passwordInput);
+        signupButton = findViewById(R.id.sign_up_button);
+        loginButton = findViewById(R.id.loginbtn);
+        userName = findViewById(R.id.nameInput);
+        userEmail = findViewById(R.id.emailInput);
+        userPassword = findViewById(R.id.passwordInput);
 
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String Name = User_Name.getText().toString();
-                String Email = User_Email.getText().toString();
-                String Password = User_Password.getText().toString();
+                String Name = userName.getText().toString();
+                String Email = userEmail.getText().toString();
+                String Password = userPassword.getText().toString();
                 long Timestamps = System.currentTimeMillis() / 1000;
                 String ClientId = BuildConfig.API_SERVER_CLIENT_ID;
-                String hmacSignature = genHmacSignature(Email, Password, Name, Timestamps);
-                Log.d("hmacSignature", hmacSignature);
-                makeSignUpApiCall(Name, Email, Password, Timestamps, hmacSignature, ClientId);
+                String loginHmacSignature = HelperMethods.GenSignUpPayloadSignature(Email, Password, Name, Timestamps);
+                Log.d("hmacSignature", loginHmacSignature);
+                makeSignUpApiCall(Name, Email, Password, Timestamps, loginHmacSignature, ClientId);
             }
         });
     }
 
-    private String genHmacSignature(String Email, String Password, String First_Name, long Timestamps) {
-
-        String Delimiter = "|";
-        String PayloadString = Email + Delimiter + Password + Delimiter + First_Name + Delimiter + SCOPE_MOBILE + Delimiter + Timestamps;
-        Log.d("Payload", PayloadString);
-
-        try {
-            String algorithm = "HmacSHA256";
-            String SECRET = BuildConfig.API_SERVER_CLIENT_SECRET;
-
-            SecretKeySpec keySpec = new SecretKeySpec(SECRET.getBytes(StandardCharsets.UTF_8), algorithm);
-            Mac HmacSHA256 = Mac.getInstance(algorithm);
-            HmacSHA256.init(keySpec);
-
-            byte[] signatureBytes = HmacSHA256.doFinal(PayloadString.getBytes(StandardCharsets.UTF_8));
-
-            // Converting the byte array to a hexadecimal string
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : signatureBytes) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     private void makeSignUpApiCall(String Name, String Email, String Password, long Timestamp, String Signature, String ClientId) {
-        String url = BuildConfig.API_LOCAL_HOST + "/users";
+        String url = BuildConfig.API_SERVER_SCHEME + "://" + BuildConfig.API_SERVER_HOST + "/users";
 
         JSONObject json = new JSONObject();
         try {
@@ -112,29 +76,29 @@ public class SignupActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        final String requestBody = json.toString();
+        final String signUpRequestBody = json.toString();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+        StringRequest SignUpRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.d("SignupResponse", response);
                         try {
                             //Handling JSON Response
-                            JSONObject Server_response = new JSONObject(response);
-                            JSONObject User_data = new JSONObject(Server_response.getString("data"));
-                            String access_token = User_data.getString("access_token");
-                            String refresh_token = User_data.getString("refresh_token");
-                            long access_token_created_at = User_data.getLong("created_at");
-                            int access_token_expires_in = User_data.getInt("expires_in");
+                            JSONObject serverResponse = new JSONObject(response);
+                            JSONObject userData = new JSONObject(serverResponse.getString("data"));
+                            String accessToken = userData.getString("access_token");
+                            String refreshToken = userData.getString("refresh_token");
+                            long accessTokenCreatedAt = userData.getLong("created_at");
+                            int accessTokenExpiresIn = userData.getInt("expires_in");
 
-                            //adding the user access data to the shared preferences
+                            //Adding the user access data to the shared preferences
                             SharedPreferences user_access_preferences = getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = user_access_preferences.edit();
-                            editor.putString("access_token", access_token);
-                            editor.putString("refresh_token", refresh_token);
-                            editor.putLong("access_token_created_at", access_token_created_at);
-                            editor.putInt("access_token_expires_in", access_token_expires_in);
+                            editor.putString("access_token", accessToken);
+                            editor.putString("refresh_token", refreshToken);
+                            editor.putLong("access_token_created_at", accessTokenCreatedAt);
+                            editor.putInt("access_token_expires_in", accessTokenExpiresIn);
                             editor.apply();
 
                             //Showing the Devices Activity
@@ -152,6 +116,7 @@ public class SignupActivity extends AppCompatActivity {
                     }
                 }, new Response.ErrorListener() {
             @Override
+            // Handling Error Responses
             public void onErrorResponse(VolleyError error) {
                 if (error.networkResponse != null) {
                     String responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
@@ -162,16 +127,18 @@ public class SignupActivity extends AppCompatActivity {
             }
         }) {
             @Override
+            // Specifying the Payload type
             public String getBodyContentType() {
                 return "application/json; charset=utf-8";
             }
 
             @Override
+            // Payload
             public byte[] getBody() {
-                return requestBody.getBytes(StandardCharsets.UTF_8);
+                return signUpRequestBody.getBytes(StandardCharsets.UTF_8);
             }
         };
-        requestQueue.add(stringRequest);
+        requestQueue.add(SignUpRequest);
     }
 
 }
