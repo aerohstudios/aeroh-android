@@ -54,7 +54,7 @@
         app:layout_constraintTop_toTopOf="@id/textView2">
 
         <Button
-            android:id="@+id/signupbtn"
+            android:id="@+id/signup_btn"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:background="@drawable/button_background_stroke"
@@ -68,7 +68,7 @@
             android:layout_marginStart="15dp" />
 
         <Button
-            android:id="@+id/login_button"
+            android:id="@+id/login_btn"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:background="@drawable/button_background_stroke_yellow"

@@ -18,8 +18,8 @@ public class OnboardingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_onboarding);
 
 
-        sign_up_button = findViewById(R.id.signupbtn);
-        login_button = findViewById(R.id.login_button);
+        sign_up_button = findViewById(R.id.signup_btn);
+        login_button = findViewById(R.id.login_btn);
 
         sign_up_button.setOnClickListener(v -> {
             Handler handler = new Handler();
