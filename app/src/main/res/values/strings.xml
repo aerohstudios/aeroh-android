@@ -9,4 +9,13 @@
     <string name="email_txt">Email</string>
     <string name="password_txt">Password</string>
     <string name="name_txt">Name</string>
+    <string name="internet_error">Network Error!</string>
+    <string name="empty_name_error">Please enter your name</string>
+    <string name="empty_email_error">Please enter your email</string>
+    <string name="empty_password_error">Please enter your password</string>
+    <string name="email_in_use_error">Email has already been taken</string>
+    <string name="invalid_credentials">Email or password is invalid</string>
+    <string name="invalid_format_email">Please enter a valid email</string>
+    <string name="invalid_format_password">Please choose a strong password</string>
+
 </resources>

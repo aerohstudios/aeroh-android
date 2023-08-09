@@ -8,8 +8,12 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +25,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -32,42 +37,88 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import io.aeroh.android.utils.HelperMethods;
+import io.aeroh.android.utils.NetworkStatus;
 
 public class LoginActivity extends AppCompatActivity {
 
     private static final int Delay = 500;
     private static final String SCOPE_MOBILE = "mobile";
+    private static final int animationDelay = 2000;
     private RequestQueue requestQueue;
+    private Animation fadeInAnimation;
+    private Animation fadeOutAnimation;
+    Button loginButton, signUpButton;
+    EditText emailField, passwordField;
+    TextView emailError, passwordError, warningMessage;
+    LinearLayout loginNetworkError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Button LoginButton = findViewById(R.id.login_button);
-        Button SignupButton = findViewById(R.id.signupbtn);
-        EditText emailField = findViewById(R.id.user_email);
-        EditText passwordField = findViewById(R.id.user_password);
+        loginButton = findViewById(R.id.login_button);
+        signUpButton = findViewById(R.id.signupbtn);
+        emailField = findViewById(R.id.userEmail);
+        passwordField = findViewById(R.id.userPassword);
+        emailError = findViewById(R.id.loginEmailError);
+        passwordError = findViewById(R.id.loginPasswordError);
+        loginNetworkError = findViewById(R.id.loginNetworkError);
+        warningMessage = findViewById(R.id.loginWarningMessage);
+        fadeInAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
+        fadeOutAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
 
         // Initialize the RequestQueue
         requestQueue = Volley.newRequestQueue(this);
 
-        LoginButton.setOnClickListener(new View.OnClickListener() {
+        loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String userEmail = emailField.getText().toString();
-                String userPassword = passwordField.getText().toString();
-                long timestamps = System.currentTimeMillis() / 1000;
-                String hmacSignature = HelperMethods.GenLoginPayloadSignature(userEmail, userPassword, timestamps);
-
-                if (!TextUtils.isEmpty(userEmail) && !TextUtils.isEmpty(userPassword)) {
-                    String clientId = BuildConfig.API_SERVER_CLIENT_ID;
-                    makeLoginApiCall(userEmail, userPassword, timestamps, clientId, hmacSignature);
+                if (!NetworkStatus.isInternetConnected(getApplicationContext())) {
+                    loginNetworkError.setVisibility(View.VISIBLE);
+                    loginNetworkError.setAnimation(fadeInAnimation);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            loginNetworkError.setAnimation(fadeOutAnimation);
+                            loginNetworkError.setVisibility(View.INVISIBLE);
+                        }
+                    }, animationDelay);
                 } else {
-                    Toast.makeText(LoginActivity.this, "Please fill all details", Toast.LENGTH_SHORT).show();
+                    loginNetworkError.setVisibility(View.INVISIBLE);
+                    warningMessage.setText(R.string.internet_error);
+                    String userEmail = emailField.getText().toString();
+                    String userPassword = passwordField.getText().toString();
+                    long timestamps = System.currentTimeMillis() / 1000;
+                    String hmacSignature = HelperMethods.GenLoginPayloadSignature(userEmail, userPassword, timestamps);
+                    if (!userEmail.isEmpty() && !userPassword.isEmpty()) {
+                        emailError.setVisibility(View.INVISIBLE);
+                        emailField.setBackgroundResource(R.drawable.background_with_stroke_white);
+                        passwordError.setVisibility(View.INVISIBLE);
+                        passwordField.setBackgroundResource(R.drawable.background_with_stroke_white);
+                        String clientId = BuildConfig.API_SERVER_CLIENT_ID;
+                        makeLoginApiCall(userEmail, userPassword, timestamps, clientId, hmacSignature);
+                    } else {
+                        if (userEmail.isEmpty()) {
+                            emailError.setText(R.string.empty_email_error);
+                            emailError.setVisibility(View.VISIBLE);
+                            emailField.setBackgroundResource(R.drawable.error_background);
+                        } else {
+                            emailError.setVisibility(View.INVISIBLE);
+                            emailField.setBackgroundResource(R.drawable.background_with_stroke_white);
+                        }
+                        if (userPassword.isEmpty()) {
+                            passwordError.setText(R.string.empty_password_error);
+                            passwordError.setVisibility(View.VISIBLE);
+                            passwordField.setBackgroundResource(R.drawable.error_background);
+                        } else {
+                            passwordError.setVisibility(View.INVISIBLE);
+                            passwordField.setBackgroundResource(R.drawable.background_with_stroke_white);
+                        }
+                    }
                 }
             }
         });
-        SignupButton.setOnClickListener(new View.OnClickListener() {
+        signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
@@ -76,7 +127,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
     }
-
 
 
     private void makeLoginApiCall(String Email, String Password, Long timestamp, String clientId, String signature) {
@@ -141,8 +191,19 @@ public class LoginActivity extends AppCompatActivity {
                 if (error.networkResponse != null) {
                     String responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                     Log.e("SignInResponseError", responseBody);
+                    try {
+                        JSONObject response = new JSONObject(responseBody);
+                        JSONArray errorArray = response.getJSONArray("errors");
+                        String errorMessage = errorArray.getString(0);
+                        loginNetworkError.setVisibility(View.VISIBLE);
+                        warningMessage.setText(errorMessage);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
                 } else {
+                    loginNetworkError.setVisibility(View.INVISIBLE);
+                    warningMessage.setText(R.string.internet_error);
                     Log.e("SignInError", error.toString());
                 }
             }
