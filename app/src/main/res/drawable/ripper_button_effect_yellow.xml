@@ -1,0 +1,14 @@
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#7A000000">
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <solid android:color="#2D48DF" />
+            <corners android:radius="30dp" />
+        </shape>
+    </item>
+    <item>
+        <layer-list>
+            <item android:drawable="@drawable/button_background_stroke_yellow" />
+        </layer-list>
+    </item>
+</ripple>
