@@ -73,6 +73,8 @@ public class SignupActivity extends AppCompatActivity {
                 String Password = userPassword.getText().toString();
                 long Timestamps = System.currentTimeMillis() / 1000;
                 String ClientId = BuildConfig.API_SERVER_CLIENT_ID;
+                networkError.setVisibility(View.INVISIBLE);
+                warningMessage.setText(R.string.internet_error);
                 if (!NetworkStatus.isInternetConnected(getApplicationContext())) {
                     networkError.setVisibility(View.VISIBLE);
                     networkError.setAnimation(fadeInAnimation);
@@ -147,8 +149,16 @@ public class SignupActivity extends AppCompatActivity {
                 }
             }
         });
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("Message", "Login Button Cliked");
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
-
 
     private void makeSignUpApiCall(String Name, String Email, String Password, long Timestamp, String Signature, String ClientId) {
         String url = BuildConfig.API_SERVER_SCHEME + "://" + BuildConfig.API_SERVER_HOST + "/users";
@@ -197,6 +207,7 @@ public class SignupActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     startActivity(intent);
+                                    finish();
                                 }
                             }, Delay);
                         } catch (JSONException e) {
@@ -214,7 +225,7 @@ public class SignupActivity extends AppCompatActivity {
                         JSONObject response = new JSONObject(responseBody);
                         JSONArray errorArray = response.getJSONArray("errors");
                         String errorMessage = errorArray.getString(0);
-                        if(errorMessage.toString() == "Email has already been taken") {
+                        if (errorMessage.toString() == "Email has already been taken") {
                             userEmail.setBackgroundResource(R.drawable.error_background);
                             emailError.setVisibility(View.VISIBLE);
                             emailError.setText(errorMessage);
@@ -247,14 +258,5 @@ public class SignupActivity extends AppCompatActivity {
             }
         };
         requestQueue.add(SignUpRequest);
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("Message", "Login Button Cliked");
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 }

@@ -3,8 +3,10 @@ package io.aeroh.android;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -49,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
     private Animation fadeOutAnimation;
     Button loginButton, signUpButton;
     EditText emailField, passwordField;
-    TextView emailError, passwordError, warningMessage;
+    TextView emailError, passwordError, warningMessage, forgotPassword;
     LinearLayout loginNetworkError;
 
     @Override
@@ -64,6 +66,7 @@ public class LoginActivity extends AppCompatActivity {
         passwordError = findViewById(R.id.loginPasswordError);
         loginNetworkError = findViewById(R.id.loginNetworkError);
         warningMessage = findViewById(R.id.loginWarningMessage);
+        forgotPassword = findViewById(R.id.forgotPassword);
         fadeInAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
         fadeOutAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
 
@@ -123,11 +126,29 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
-
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            Intent httpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.API_SERVER_SCHEME + "://" + BuildConfig.API_SERVER_HOST + "/users/password/new"));
+            @Override
+            public void onClick(View view) {
+                Animation clickAnim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.click_animation);
+                forgotPassword.startAnimation(clickAnim);
+                openForgotPassword(httpIntent);
+            }
+        });
     }
 
+    private void openForgotPassword(Intent intent) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startActivity(intent);
+                finish();
+            }
+        }, animationDelay);
+    }
 
     private void makeLoginApiCall(String Email, String Password, Long timestamp, String clientId, String signature) {
         // API endpoint
@@ -179,6 +200,7 @@ public class LoginActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     startActivity(intent);
+                                    finish();
                                 }
                             }, Delay);
                         } catch (JSONException e) {
