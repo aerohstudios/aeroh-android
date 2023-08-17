@@ -26,6 +26,7 @@ public class OnboardingActivity extends AppCompatActivity {
             handler.postDelayed(() -> {
                 Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
                 startActivity(intent);
+                finish();
             }, delay);
         });
 
@@ -35,6 +36,7 @@ public class OnboardingActivity extends AppCompatActivity {
             handler.postDelayed(() -> {
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
+                finish();
             }, delay);
 
         });
