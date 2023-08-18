@@ -20,9 +20,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -45,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final int Delay = 500;
     private static final String SCOPE_MOBILE = "mobile";
-    private static final int animationDelay = 2000;
+    private static final int animationDelay = 3500;
     private RequestQueue requestQueue;
     private Animation fadeInAnimation;
     private Animation fadeOutAnimation;
@@ -67,8 +71,6 @@ public class LoginActivity extends AppCompatActivity {
         loginNetworkError = findViewById(R.id.loginNetworkError);
         warningMessage = findViewById(R.id.loginWarningMessage);
         forgotPassword = findViewById(R.id.forgotPassword);
-        fadeInAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
-        fadeOutAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
 
         // Initialize the RequestQueue
         requestQueue = Volley.newRequestQueue(this);
@@ -77,45 +79,27 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!NetworkStatus.isInternetConnected(getApplicationContext())) {
-                    loginNetworkError.setVisibility(View.VISIBLE);
-                    loginNetworkError.setAnimation(fadeInAnimation);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            loginNetworkError.setAnimation(fadeOutAnimation);
-                            loginNetworkError.setVisibility(View.INVISIBLE);
-                        }
-                    }, animationDelay);
+                    showNetworkError(getResources().getString(R.string.internet_error));
                 } else {
-                    loginNetworkError.setVisibility(View.INVISIBLE);
-                    warningMessage.setText(R.string.internet_error);
+                    resetErrors();
                     String userEmail = emailField.getText().toString();
                     String userPassword = passwordField.getText().toString();
                     long timestamps = System.currentTimeMillis() / 1000;
                     String hmacSignature = HelperMethods.GenLoginPayloadSignature(userEmail, userPassword, timestamps);
                     if (!userEmail.isEmpty() && !userPassword.isEmpty()) {
-                        emailError.setVisibility(View.INVISIBLE);
-                        emailField.setBackgroundResource(R.drawable.background_with_stroke_white);
-                        passwordError.setVisibility(View.INVISIBLE);
-                        passwordField.setBackgroundResource(R.drawable.background_with_stroke_white);
+                        resetErrors();
                         String clientId = BuildConfig.API_SERVER_CLIENT_ID;
                         makeLoginApiCall(userEmail, userPassword, timestamps, clientId, hmacSignature);
                     } else {
                         if (userEmail.isEmpty()) {
-                            emailError.setText(R.string.empty_email_error);
-                            emailError.setVisibility(View.VISIBLE);
-                            emailField.setBackgroundResource(R.drawable.error_background);
+                            showFieldErrors(emailError, emailField, getResources().getString(R.string.empty_email_error));
                         } else {
-                            emailError.setVisibility(View.INVISIBLE);
-                            emailField.setBackgroundResource(R.drawable.background_with_stroke_white);
+                            resetErrors();
                         }
                         if (userPassword.isEmpty()) {
-                            passwordError.setText(R.string.empty_password_error);
-                            passwordError.setVisibility(View.VISIBLE);
-                            passwordField.setBackgroundResource(R.drawable.error_background);
+                            showFieldErrors(passwordError, passwordField, getResources().getString(R.string.empty_password_error));
                         } else {
-                            passwordError.setVisibility(View.INVISIBLE);
-                            passwordField.setBackgroundResource(R.drawable.background_with_stroke_white);
+                            resetErrors();
                         }
                     }
                 }
@@ -124,32 +108,72 @@ public class LoginActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
-                startActivity(intent);
-                finish();
+                openSignup();
             }
         });
         forgotPassword.setOnClickListener(new View.OnClickListener() {
-            Intent httpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.API_SERVER_SCHEME + "://" + BuildConfig.API_SERVER_HOST + "/users/password/new"));
+
             @Override
             public void onClick(View view) {
-                Animation clickAnim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.click_animation);
-                forgotPassword.startAnimation(clickAnim);
-                openForgotPassword(httpIntent);
+                openForgotPassword();
             }
         });
     }
 
-    private void openForgotPassword(Intent intent) {
+    //Open Forgot Password
+    private void openForgotPassword() {
+        Animation clickAnim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.click_animation);
+        forgotPassword.startAnimation(clickAnim);
+        Intent httpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.API_SERVER_SCHEME + "://" + BuildConfig.API_SERVER_HOST + "/users/password/new"));
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(intent);
+                startActivity(httpIntent);
                 finish();
             }
         }, animationDelay);
     }
 
+    //open Signup Activity
+    private void openSignup() {
+        Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    //Reset errors on Login page
+    private void resetErrors() {
+        emailError.setVisibility(View.INVISIBLE);
+        emailField.setBackgroundResource(R.drawable.background_with_stroke_white);
+        passwordError.setVisibility(View.INVISIBLE);
+        passwordField.setBackgroundResource(R.drawable.background_with_stroke_white);
+        warningMessage.setText(R.string.internet_error);
+    }
+
+    //Handle Network Error
+    private void showNetworkError(String errorMessage) {
+        fadeInAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
+        fadeOutAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
+        loginNetworkError.setVisibility(View.VISIBLE);
+        loginNetworkError.setAnimation(fadeInAnimation);
+        warningMessage.setText(errorMessage);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loginNetworkError.setAnimation(fadeOutAnimation);
+                loginNetworkError.setVisibility(View.INVISIBLE);
+            }
+        }, animationDelay);
+    }
+
+    //handle text field errors
+    private void showFieldErrors(TextView textView, EditText editText, String errorMessage) {
+        textView.setText(errorMessage);
+        textView.setVisibility(View.VISIBLE);
+        editText.setBackgroundResource(R.drawable.error_background);
+    }
+
+    //login api call
     private void makeLoginApiCall(String Email, String Password, Long timestamp, String clientId, String signature) {
         // API endpoint
         String url = BuildConfig.API_SERVER_SCHEME + "://" + BuildConfig.API_SERVER_HOST + "/users/sign_in";
@@ -209,24 +233,26 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }, new Response.ErrorListener() {
             @Override
+            //Handling error response
             public void onErrorResponse(VolleyError error) {
-                if (error.networkResponse != null) {
-                    String responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
-                    Log.e("SignInResponseError", responseBody);
+                if (error instanceof NetworkError) {
+                    // Handle network error
+                    showNetworkError("Bad Network!");
+                } else if (error instanceof TimeoutError || error instanceof ServerError) {
+                    // Handle timeout error
+                    showNetworkError("Server Timed Out!");
+                } else if (error instanceof AuthFailureError) {
+                    String responseData = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                     try {
-                        JSONObject response = new JSONObject(responseBody);
+                        JSONObject response = new JSONObject(responseData);
                         JSONArray errorArray = response.getJSONArray("errors");
                         String errorMessage = errorArray.getString(0);
-                        loginNetworkError.setVisibility(View.VISIBLE);
-                        warningMessage.setText(errorMessage);
+                        showNetworkError(errorMessage);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 } else {
-                    loginNetworkError.setVisibility(View.INVISIBLE);
-                    warningMessage.setText(R.string.internet_error);
-                    Log.e("SignInError", error.toString());
+                    showNetworkError("Something went wrong. Please try again later!");
                 }
             }
 

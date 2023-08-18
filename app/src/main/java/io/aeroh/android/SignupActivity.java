@@ -13,13 +13,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -29,6 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import io.aeroh.android.utils.HelperMethods;
 import io.aeroh.android.utils.NetworkStatus;
@@ -38,9 +46,7 @@ public class SignupActivity extends AppCompatActivity {
 
     private static final String SCOPE_MOBILE = "mobile";
     private static final int Delay = 500;
-    private static final int animationDelay = 2000;
-    private Animation fadeInAnimation;
-    private Animation fadeOutAnimation;
+    private static final int animationDelay = 3500;
     RequestQueue requestQueue;
     Button signupButton, loginButton;
     EditText userName, userEmail, userPassword;
@@ -62,8 +68,6 @@ public class SignupActivity extends AppCompatActivity {
         passwordError = findViewById(R.id.passwordError);
         networkError = findViewById(R.id.networkError);
         warningMessage = findViewById(R.id.warningMessage);
-        fadeInAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
-        fadeOutAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
 
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,72 +80,39 @@ public class SignupActivity extends AppCompatActivity {
                 networkError.setVisibility(View.INVISIBLE);
                 warningMessage.setText(R.string.internet_error);
                 if (!NetworkStatus.isInternetConnected(getApplicationContext())) {
-                    networkError.setVisibility(View.VISIBLE);
-                    networkError.setAnimation(fadeInAnimation);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            networkError.setAnimation(fadeOutAnimation);
-                            networkError.setVisibility(View.INVISIBLE);
-                        }
-                    }, animationDelay);
+                    showNetworkError(getResources().getString(R.string.internet_error));
                 } else {
                     if (Name.isEmpty() || Email.isEmpty() || Password.isEmpty()) {
                         if (Name.isEmpty()) {
-                            userName.setBackgroundResource(R.drawable.error_background);
-                            nameError.setVisibility(View.VISIBLE);
-                            nameError.setText(R.string.empty_name_error);
+                            showTextAuthenticationError(userName, nameError, getResources().getString(R.string.empty_name_error));
                         } else {
-                            userName.setBackgroundResource(R.drawable.background_with_stroke_white);
-                            nameError.setVisibility(View.INVISIBLE);
+                            resetErrors();
                         }
                         if (Email.isEmpty()) {
-                            userEmail.setBackgroundResource(R.drawable.error_background);
-                            emailError.setVisibility(View.VISIBLE);
-                            emailError.setText(R.string.empty_email_error);
+                            showTextAuthenticationError(userEmail, emailError, getResources().getString(R.string.empty_email_error));
                         } else {
-                            userEmail.setBackgroundResource(R.drawable.background_with_stroke_white);
-                            emailError.setVisibility(View.INVISIBLE);
+                            resetErrors();
                         }
                         if (Password.isEmpty()) {
-                            userPassword.setBackgroundResource(R.drawable.error_background);
-                            passwordError.setVisibility(View.VISIBLE);
-                            passwordError.setText(R.string.empty_password_error);
+                            showTextAuthenticationError(userPassword, passwordError, getResources().getString(R.string.empty_password_error));
                         } else {
-                            userPassword.setBackgroundResource(R.drawable.background_with_stroke_white);
-                            passwordError.setVisibility(View.INVISIBLE);
+                            resetErrors();
                         }
                     } else {
-                        userName.setBackgroundResource(R.drawable.background_with_stroke_white);
-                        nameError.setVisibility(View.INVISIBLE);
-                        userEmail.setBackgroundResource(R.drawable.background_with_stroke_white);
-                        emailError.setVisibility(View.INVISIBLE);
-                        userPassword.setBackgroundResource(R.drawable.background_with_stroke_white);
-                        passwordError.setVisibility(View.INVISIBLE);
+                        resetErrors();
                         if (!TextValidators.validateEmail(Email) || !TextValidators.validatePassword(Password)) {
                             if (!TextValidators.validateEmail(Email)) {
-                                userEmail.setBackgroundResource(R.drawable.error_background);
-                                emailError.setVisibility(View.VISIBLE);
-                                emailError.setText(R.string.invalid_format_email);
+                                showTextAuthenticationError(userEmail, emailError, getResources().getString(R.string.invalid_format_email));
                             } else {
-                                userEmail.setBackgroundResource(R.drawable.background_with_stroke_white);
-                                emailError.setVisibility(View.INVISIBLE);
+                                resetErrors();
                             }
                             if (!TextValidators.validatePassword(Password)) {
-                                userPassword.setBackgroundResource(R.drawable.error_background);
-                                passwordError.setVisibility(View.VISIBLE);
-                                passwordError.setText(R.string.invalid_format_password);
+                                showTextAuthenticationError(userPassword, passwordError, getResources().getString(R.string.invalid_format_password));
                             } else {
-                                userPassword.setBackgroundResource(R.drawable.background_with_stroke_white);
-                                passwordError.setVisibility(View.INVISIBLE);
+                                resetErrors();
                             }
                         } else {
-                            userName.setBackgroundResource(R.drawable.background_with_stroke_white);
-                            nameError.setVisibility(View.INVISIBLE);
-                            userEmail.setBackgroundResource(R.drawable.background_with_stroke_white);
-                            emailError.setVisibility(View.INVISIBLE);
-                            userPassword.setBackgroundResource(R.drawable.background_with_stroke_white);
-                            passwordError.setVisibility(View.INVISIBLE);
+                            resetErrors();
                             String loginHmacSignature = HelperMethods.GenSignUpPayloadSignature(Email, Password, Name, Timestamps);
                             makeSignUpApiCall(Name, Email, Password, Timestamps, loginHmacSignature, ClientId);
                         }
@@ -152,13 +123,59 @@ public class SignupActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Message", "Login Button Cliked");
+                openLoginActivity();
+            }
+        });
+    }
+
+
+    //open login activity
+    private void openLoginActivity() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
                 finish();
             }
-        });
+        }, Delay);
     }
+
+    //reset errors
+    private void resetErrors() {
+        userName.setBackgroundResource(R.drawable.background_with_stroke_white);
+        nameError.setVisibility(View.INVISIBLE);
+        userEmail.setBackgroundResource(R.drawable.background_with_stroke_white);
+        emailError.setVisibility(View.INVISIBLE);
+        userPassword.setBackgroundResource(R.drawable.background_with_stroke_white);
+        passwordError.setVisibility(View.INVISIBLE);
+    }
+
+    //handle network error
+    private void showNetworkError(String errorMessage) {
+        resetErrors();
+        Animation fadeInAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
+        Animation fadeOutAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
+        networkError.setVisibility(View.VISIBLE);
+        networkError.setAnimation(fadeInAnimation);
+        warningMessage.setText(errorMessage);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                networkError.setAnimation(fadeOutAnimation);
+                networkError.setVisibility(View.INVISIBLE);
+            }
+        }, animationDelay);
+    }
+
+    //show email errors
+    public void showTextAuthenticationError(EditText editText, TextView textView, String errorMessage) {
+        editText.setBackgroundResource(R.drawable.error_background);
+        textView.setVisibility(View.VISIBLE);
+        textView.setText(errorMessage);
+    }
+
+
 
     private void makeSignUpApiCall(String Name, String Email, String Password, long Timestamp, String Signature, String ClientId) {
         String url = BuildConfig.API_SERVER_SCHEME + "://" + BuildConfig.API_SERVER_HOST + "/users";
@@ -181,7 +198,6 @@ public class SignupActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("SignupResponse", response);
                         try {
                             //Handling JSON Response
                             JSONObject serverResponse = new JSONObject(response);
@@ -216,34 +232,29 @@ public class SignupActivity extends AppCompatActivity {
                     }
                 }, new Response.ErrorListener() {
             @Override
-            // Handling Error Responses
+            //Handling error response
             public void onErrorResponse(VolleyError error) {
-                if (error.networkResponse != null) {
-                    String responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
-                    Log.d("SignupErrorResponse", responseBody);
+                if (error instanceof NetworkError) {
+                    // Handle network error
+                    showNetworkError("Bad Network!");
+                } else if (error instanceof TimeoutError || error instanceof ServerError) {
+                    // Handle timeout error
+                    showNetworkError("Server Timed Out!");
+                } else if (error instanceof AuthFailureError) {
+                    String responseData = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                     try {
-                        JSONObject response = new JSONObject(responseBody);
+                        JSONObject response = new JSONObject(responseData);
                         JSONArray errorArray = response.getJSONArray("errors");
                         String errorMessage = errorArray.getString(0);
-                        if (errorMessage.toString() == "Email has already been taken") {
-                            userEmail.setBackgroundResource(R.drawable.error_background);
-                            emailError.setVisibility(View.VISIBLE);
-                            emailError.setText(errorMessage);
-                        } else {
-                            networkError.setVisibility(View.VISIBLE);
-                            warningMessage.setText(errorMessage);
-                        }
+                        showNetworkError(errorMessage);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 } else {
-                    userEmail.setBackgroundResource(R.drawable.background_with_stroke_white);
-                    emailError.setVisibility(View.INVISIBLE);
-                    networkError.setVisibility(View.INVISIBLE);
-                    warningMessage.setText(R.string.internet_error);
-                    Log.d("SignUpError", error.toString());
+                    showNetworkError("Something went wrong. Please try again later!");
                 }
             }
+
         }) {
             @Override
             // Specifying the Payload type
