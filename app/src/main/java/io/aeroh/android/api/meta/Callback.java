@@ -3,6 +3,7 @@ package io.aeroh.android.api.meta;
 public interface Callback {
     enum failureType {
         INVALID_TOKEN,
+        CANNOT_REACH_SERVER,
         SERVER_ERROR
     }
 

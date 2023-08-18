@@ -68,10 +68,13 @@ public class ApiServer {
             public void onResponse(Call<List<User>> call, retrofit2.Response<List<User>> response) {
                 Log.d("ApiServer", "Got response");
                 int statusCode = response.code();
+                Log.d("Status Code", String.valueOf(statusCode));
                 if (statusCode == 200) {
                     cb.onSuccess();
                 } else if (statusCode == 401) {
-                    cb.onFailure(Callback.failureType.INVALID_TOKEN, "Access token is not valid");
+                    cb.onFailure(Callback.failureType.INVALID_TOKEN, "Access token is not valid!");
+                } else if(statusCode == 404) {
+                    cb.onFailure(Callback.failureType.CANNOT_REACH_SERVER, "Cannot reach the server at this moment!");
                 }
             }
 

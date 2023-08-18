@@ -10,13 +10,12 @@ import android.widget.Button;
 public class OnboardingActivity extends AppCompatActivity {
 
     Button sign_up_button, login_button;
-    int delay = 500;
+    int onClickDelay = 500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
-
 
         sign_up_button = findViewById(R.id.signup_btn);
         login_button = findViewById(R.id.login_btn);
@@ -27,7 +26,7 @@ public class OnboardingActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
                 startActivity(intent);
                 finish();
-            }, delay);
+            }, onClickDelay);
         });
 
 
@@ -37,7 +36,7 @@ public class OnboardingActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
                 finish();
-            }, delay);
+            }, onClickDelay);
 
         });
     }
