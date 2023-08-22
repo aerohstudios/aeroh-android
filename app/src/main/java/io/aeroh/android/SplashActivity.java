@@ -31,7 +31,6 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("MainActivity", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
@@ -75,7 +74,7 @@ public class SplashActivity extends AppCompatActivity {
 
     void verifyAccessToken() {
         SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
-        String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
+        String access_token = shared_preferences.getString("access_token", null);
         if (access_token != null) {
             Log.d("MainActivity", "access_token is present");
             ApiServer api_server = new ApiServer(access_token);
@@ -89,7 +88,7 @@ public class SplashActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(failureType type, String message) {
                     if (type == failureType.INVALID_TOKEN) {
-                        shared_preferences.edit().remove("API_SERVER_ACCESS_TOKEN").apply();
+                        shared_preferences.edit().remove("access_token").apply();
                         openLoginActivity();
                     } else {
                         Log.d("MainActivity", "request failed!");
@@ -132,7 +131,7 @@ public class SplashActivity extends AppCompatActivity {
             try {
                 String access_token = response.getString("access_token");
                 SharedPreferences shared_preferences = context.getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
-                shared_preferences.edit().putString("API_SERVER_ACCESS_TOKEN", access_token).apply();
+                shared_preferences.edit().putString("access_token", access_token).apply();
                 verifyAccessToken();
             } catch (Exception e) {
                 String message = e.getMessage();

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,8 +28,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DevicesActivity extends AppCompatActivity {
+    int Delay = 1000;
     ListView devicesListView;
     DevicesArrayAdapter devicesArrayAdapter;
+    Button logOutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +59,18 @@ public class DevicesActivity extends AppCompatActivity {
                 Log.d("DevicesActivity", "Add Device button clicked!");
                 Intent intent = new Intent(getApplicationContext(), RequestPermissionActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        logOutButton = findViewById(R.id.logOutButton);
+        logOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences userAccessPreferences = getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = userAccessPreferences.edit();
+                editor.clear();
+                editor.apply();
+                openLoginActivity();
             }
         });
     }
@@ -95,6 +110,17 @@ public class DevicesActivity extends AppCompatActivity {
     void populateDevicesList(List<Device> devices) {
         devicesArrayAdapter = new DevicesArrayAdapter(getApplicationContext(), devices);
         devicesListView.setAdapter(devicesArrayAdapter);
+    }
+
+    void openLoginActivity() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent loginIntent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(loginIntent);
+                finish();
+            }
+        }, Delay);
     }
 
     static class DevicesArrayAdapter extends ArrayAdapter<Device> {
