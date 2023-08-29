@@ -2,26 +2,38 @@ package io.aeroh.android;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.Toolbar;
+
+import com.google.android.material.navigation.NavigationView;
 
 import io.aeroh.android.models.Device;
 
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,7 +43,11 @@ public class DevicesActivity extends AppCompatActivity {
     int Delay = 1000;
     ListView devicesListView;
     DevicesArrayAdapter devicesArrayAdapter;
-    Button logOutButton;
+    ImageView hamburgerIcon;
+    NavigationView navigationView;
+    DrawerLayout drawerLayout;
+    Toolbar toolbar;
+    ActionBarDrawerToggle actionBarDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +55,36 @@ public class DevicesActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_devices);
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(null);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
+        drawerLayout = findViewById(R.id.DevicesDrawerLayout);
+        navigationView = findViewById(R.id.DevicesActivityNavigationView);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        hamburgerIcon = findViewById(R.id.navigationButton);
+        actionBarDrawerToggle.syncState();
+
+        hamburgerIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("Onclick", "Button Clicked");
+            }
+        });
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @SuppressLint("NonConstantResourceId")
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                if (item.getItemId() == R.id.logOutButton) {
+                    logout();
+                }
+                return true;
+            }
+        });
 
         devicesListView = findViewById(R.id.devices_list_view);
         devicesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -62,18 +108,14 @@ public class DevicesActivity extends AppCompatActivity {
             }
         });
 
-        logOutButton = findViewById(R.id.logOutButton);
-        logOutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences userAccessPreferences = getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = userAccessPreferences.edit();
-                editor.clear();
-                editor.apply();
-                openLoginActivity();
-            }
-        });
     }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        actionBarDrawerToggle.syncState();
+    }
+
 
     @Override
     protected void onResume() {
@@ -121,6 +163,13 @@ public class DevicesActivity extends AppCompatActivity {
                 finish();
             }
         }, Delay);
+    }
+
+    void logout() {
+        SharedPreferences userAccessPreferences = getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = userAccessPreferences.edit();
+        editor.clear().apply();
+        openLoginActivity();
     }
 
     static class DevicesArrayAdapter extends ArrayAdapter<Device> {
