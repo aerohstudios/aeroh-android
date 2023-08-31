@@ -36,6 +36,15 @@ import retrofit2.Response;
 
 public class DeviceActivity extends AppCompatActivity {
     MQTTClient mqttClient = null;
+
+    enum MQTTClientStatus {
+        Connecting,
+        Connected,
+        ConnectionFailed,
+    }
+
+    MQTTClientStatus mqttClientStatus = null;
+
     Device device = null;
 
     @Override
@@ -65,6 +74,7 @@ public class DeviceActivity extends AppCompatActivity {
         device_name.setText(device.name);
 
         createMQTTClient(device);
+        connectToMQTTServer();
 
         Button btnTogglePower = (Button) findViewById(R.id.btnTogglePower);
         btnTogglePower.setOnClickListener(new View.OnClickListener() {
@@ -133,24 +143,38 @@ public class DeviceActivity extends AppCompatActivity {
             }
         };
 
-        if (mqttClient.isConnected()) {
+        if (mqttClientStatus == MQTTClientStatus.Connected) {
             mqttClient.publish(topic, message, publishCallback);
-        } else {
-            mqttClient.connect(new MQTTClient.Callback() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    mqttClient.publish(topic, message, publishCallback);
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    view.setEnabled(true);
-                    Toast.makeText(context, "Failed to connect to MQTT Server!", Toast.LENGTH_SHORT).show();
-                }
-            });
+        } else if (mqttClientStatus == MQTTClientStatus.Connecting) {
+            view.setEnabled(true);
+            Toast.makeText(context, "Please wait till we connect to the MQTT Server!", Toast.LENGTH_SHORT).show();
+        } else if (mqttClientStatus == MQTTClientStatus.ConnectionFailed) {
+            view.setEnabled(true);
+            Toast.makeText(context, "Failed to connect to MQTT Server!", Toast.LENGTH_SHORT).show();
         }
     }
 
+    void connectToMQTTServer() {
+        if (mqttClientStatus == MQTTClientStatus.Connecting ||
+                mqttClientStatus == MQTTClientStatus.Connected) {
+            Log.d("DeviceActivity", "Already connected to MQTT Server. Aborting!");
+            return;
+        }
+        mqttClientStatus = MQTTClientStatus.Connecting;
+        mqttClient.connect(new MQTTClient.Callback() {
+            @Override
+            public void onSuccess(IMqttToken asyncActionToken) {
+                mqttClientStatus = MQTTClientStatus.Connected;
+                Toast.makeText(getApplicationContext(), "Connected to the MQTT Server!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                mqttClientStatus = MQTTClientStatus.ConnectionFailed;
+                Toast.makeText(getApplicationContext(), "Failed to connect to MQTT Server!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     void createMQTTClient(Device device) {
         Uri mqttUri = Uri.parse(device.mqtt_uri);
         String host = mqttUri.getHost();
