@@ -87,6 +87,8 @@ public class SplashActivity extends AppCompatActivity {
                         showErrorDialogue(message);
                     } else if (type == failureType.INVALID_TOKEN) {
                         getAccessToken();
+                    } else if (type == failureType.SERVER_ERROR) {
+                        showErrorDialogue("Opps! There is a server error!");
                     } else {
                         showErrorDialogue("Something went wrong!");
                     }
@@ -141,7 +143,9 @@ public class SplashActivity extends AppCompatActivity {
                 showErrorDialogue(message);
             }
         }, (VolleyError error) -> {
-            showErrorDialogue("Something went wrong!");
+            // access token and request token are not valid anymore
+            // ask the user to login
+            openOnboardActivity();
         });
         queue.add(jsonObjectRequest);
     }
