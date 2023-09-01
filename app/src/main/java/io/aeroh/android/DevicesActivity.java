@@ -68,7 +68,7 @@ public class DevicesActivity extends AppCompatActivity {
 
     void updateDevicesList() {
         SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
-        String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
+        String access_token = shared_preferences.getString("access_token", null);
         if (access_token != null) {
             ApiServer api_server = new ApiServer(access_token);
             Call<List<Device>> call = api_server.devices.list();

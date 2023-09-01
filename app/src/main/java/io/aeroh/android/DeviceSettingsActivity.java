@@ -62,7 +62,7 @@ public class DeviceSettingsActivity extends AppCompatActivity {
                         Log.d("DeviceSettingsActivity", "Create Create Device Post Request");
 
                         SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
-                        String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
+                        String access_token = shared_preferences.getString("access_token", null);
                         ApiServer api_server = new ApiServer(access_token);
 
                         Device putDevice = new Device();
@@ -123,7 +123,7 @@ public class DeviceSettingsActivity extends AppCompatActivity {
                                         setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int whichButton) {
                                                 SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
-                                                String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
+                                                String access_token = shared_preferences.getString("access_token", null);
                                                 if (access_token != null) {
                                                     ApiServer api_server = new ApiServer(access_token);
                                                     Call<ResponseBody> call = api_server.devices.delete(device.getId());

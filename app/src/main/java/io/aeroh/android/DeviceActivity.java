@@ -185,7 +185,7 @@ public class DeviceActivity extends AppCompatActivity {
         HashMap<String, String> headers = new HashMap<String, String>();
 
         SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
-        String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
+        String access_token = shared_preferences.getString("access_token", null);
         if (access_token != null) {
             headers.put("X-Aeroh-Oauth2-Access-Token", access_token);
         }

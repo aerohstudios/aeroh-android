@@ -188,7 +188,7 @@ public class ScannedDeviceActivity extends AppCompatActivity {
         Log.d("ScannedDeviceActivity", "Send Aeroh Cloud Access Token");
 
         SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
-        String access_token = shared_preferences.getString("API_SERVER_ACCESS_TOKEN", null);
+        String access_token = shared_preferences.getString("access_token", null);
 
         Log.d("ScannedDeviceActivity", "Create Device API Server");
         ApiServer api_server = new ApiServer(access_token);
