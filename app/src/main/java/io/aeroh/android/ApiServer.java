@@ -71,7 +71,7 @@ public class ApiServer {
                 Log.d("Status Code", String.valueOf(statusCode));
                 if (statusCode == 200) {
                     cb.onSuccess();
-                } else if (statusCode == 401) {
+                } else if (statusCode == 401 || statusCode == 403) {
                     cb.onFailure(Callback.failureType.INVALID_TOKEN, "Access token is not valid!");
                 } else if(statusCode == 404) {
                     cb.onFailure(Callback.failureType.CANNOT_REACH_SERVER, "Cannot reach the server at this moment!");

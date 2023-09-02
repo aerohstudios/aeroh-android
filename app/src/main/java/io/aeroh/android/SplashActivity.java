@@ -120,6 +120,7 @@ public class SplashActivity extends AppCompatActivity {
         params.put("client_id", BuildConfig.API_SERVER_CLIENT_ID);
         params.put("client_secret", BuildConfig.API_SERVER_CLIENT_SECRET);
         params.put("grant_type", "refresh_token");
+        params.put("scope", "mobile");
         params.put("refresh_token", userAccessPreference.getString("refresh_token", null));
 
         RequestQueue queue = Volley.newRequestQueue(this);
