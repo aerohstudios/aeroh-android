@@ -108,6 +108,16 @@ public class DeviceSettingsActivity extends AppCompatActivity {
             }
         });
 
+        Button btnUpdateFirmware = (Button) findViewById(R.id.btnUpdateFirmware);
+        btnUpdateFirmware.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent updateFirmwareIntent = new Intent(getApplicationContext(), FirmwareUpdateActivity.class);
+                updateFirmwareIntent.putExtra("device", device);
+                startActivity(updateFirmwareIntent);
+            }
+        });
+
         Button btnRemoveDevice = (Button) findViewById(R.id.btnRemoveDevice);
         btnRemoveDevice.setOnClickListener(new View.OnClickListener() {
             @Override
