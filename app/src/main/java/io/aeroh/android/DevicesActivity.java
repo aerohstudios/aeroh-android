@@ -11,8 +11,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -21,8 +23,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import androidx.appcompat.widget.Toolbar;
 
+
+import com.google.android.material.navigation.NavigationView;
 
 import io.aeroh.android.models.Device;
 
@@ -34,11 +39,14 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DevicesActivity extends AppCompatActivity {
+    private static final int logoutDelay = 1000;
+    private static final int drawerCloseDelay = 500;
     ListView devicesListView;
     DevicesArrayAdapter devicesArrayAdapter;
     DrawerLayout hamburgerDrawer;
     ImageView hamburgerToggle;
     Toolbar activityToolbar;
+    NavigationView devicesNavigationView;
     ActionBarDrawerToggle actionBarDrawerToggle;
 
 
@@ -51,6 +59,7 @@ public class DevicesActivity extends AppCompatActivity {
 
         hamburgerDrawer = findViewById(R.id.devicesActivityDrawer);
         activityToolbar = findViewById(R.id.devicesActivityToolbar);
+        devicesNavigationView = findViewById(R.id.devicesActivityNavigationView);
         setSupportActionBar(activityToolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
 
@@ -61,6 +70,22 @@ public class DevicesActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 hamburgerDrawer.openDrawer(GravityCompat.END);
+            }
+        });
+
+        devicesNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                if (item.getItemId() == R.id.logOutButton) {
+                    logout();
+                }
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        hamburgerDrawer.closeDrawer(GravityCompat.END);
+                    }
+                }, drawerCloseDelay);
+                return true;
             }
         });
 
@@ -88,9 +113,29 @@ public class DevicesActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         updateDevicesList();
+    }
+
+    void logout() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferences userAccessPreferences = getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
+                userAccessPreferences.edit().clear().apply();
+                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                finish();
+            }
+        }, logoutDelay);
     }
 
     void updateDevicesList() {
