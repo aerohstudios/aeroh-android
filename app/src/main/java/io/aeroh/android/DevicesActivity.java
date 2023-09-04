@@ -2,7 +2,10 @@ package io.aeroh.android;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,12 +18,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import androidx.appcompat.widget.Toolbar;
+
 
 import io.aeroh.android.models.Device;
 
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,6 +36,11 @@ import retrofit2.Response;
 public class DevicesActivity extends AppCompatActivity {
     ListView devicesListView;
     DevicesArrayAdapter devicesArrayAdapter;
+    DrawerLayout hamburgerDrawer;
+    ImageView hamburgerToggle;
+    Toolbar activityToolbar;
+    ActionBarDrawerToggle actionBarDrawerToggle;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +48,21 @@ public class DevicesActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_devices);
+
+        hamburgerDrawer = findViewById(R.id.devicesActivityDrawer);
+        activityToolbar = findViewById(R.id.devicesActivityToolbar);
+        setSupportActionBar(activityToolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
+
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, hamburgerDrawer, R.string.drawer_open_string, R.string.drawer_close_string);
+
+        hamburgerToggle = findViewById(R.id.hamburgerIcon);
+        hamburgerToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hamburgerDrawer.openDrawer(GravityCompat.END);
+            }
+        });
 
         devicesListView = findViewById(R.id.devices_list_view);
         devicesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

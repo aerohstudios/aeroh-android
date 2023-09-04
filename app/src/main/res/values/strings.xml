@@ -18,5 +18,9 @@
     <string name="invalid_format_email">Please enter a valid email</string>
     <string name="invalid_format_password">Please choose a strong password</string>
     <string name="title_activity_firmware_update">FirmwareUpdateActivity</string>
-
+    <string name="toolbar_heading_1">Hi, There</string>
+    <string name="toolbar_heading_2">Good to see you again</string>
+    <string name="logout_string">Log Out</string>
+    <string name="drawer_open_string">Open Drawer</string>
+    <string name="drawer_close_string">Close Drawer</string>
 </resources>
