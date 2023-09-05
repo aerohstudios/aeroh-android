@@ -38,12 +38,13 @@ public class DeviceActivity extends AppCompatActivity {
     MQTTClient mqttClient = null;
 
     enum MQTTClientStatus {
+        Disconnected,
         Connecting,
         Connected,
         ConnectionFailed,
     }
 
-    MQTTClientStatus mqttClientStatus = null;
+    MQTTClientStatus mqttClientStatus = MQTTClientStatus.Disconnected;
 
     Device device = null;
 
@@ -74,7 +75,6 @@ public class DeviceActivity extends AppCompatActivity {
         device_name.setText(device.name);
 
         createMQTTClient(device);
-        connectToMQTTServer();
 
         Button btnTogglePower = (Button) findViewById(R.id.btnTogglePower);
         btnTogglePower.setOnClickListener(new View.OnClickListener() {
@@ -123,6 +123,19 @@ public class DeviceActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        connectToMQTTServer();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mqttClient.disconnect();
+        mqttClientStatus = MQTTClientStatus.Disconnected;
+    }
+
     void attachBtnMQTTOnClickListener(View view, Context context, Device device, String[] command) {
         view.setEnabled(false);
 
@@ -157,7 +170,7 @@ public class DeviceActivity extends AppCompatActivity {
     void connectToMQTTServer() {
         if (mqttClientStatus == MQTTClientStatus.Connecting ||
                 mqttClientStatus == MQTTClientStatus.Connected) {
-            Log.d("DeviceActivity", "Already connected to MQTT Server. Aborting!");
+            Log.d("DeviceActivity", "Already connected to MQTT Server.");
             return;
         }
         mqttClientStatus = MQTTClientStatus.Connecting;
@@ -165,6 +178,7 @@ public class DeviceActivity extends AppCompatActivity {
             @Override
             public void onSuccess(IMqttToken asyncActionToken) {
                 mqttClientStatus = MQTTClientStatus.Connected;
+                subscribeToMQTTServer();
                 Toast.makeText(getApplicationContext(), "Connected to the MQTT Server!", Toast.LENGTH_SHORT).show();
             }
 
@@ -175,6 +189,22 @@ public class DeviceActivity extends AppCompatActivity {
             }
         });
     }
+
+    void subscribeToMQTTServer() {
+        String topic = String.format("%s/responses", device.thing_name);;
+        mqttClient.subscribe(topic, new MQTTClient.Callback() {
+            @Override
+            public void onSuccess(IMqttToken asyncActionToken) {
+                Log.d("DeviceActivity", "MQTT Subscribe Success");
+            }
+
+            @Override
+            public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                Log.d("DeviceActivity", "MQTT Subscribe Failure");
+            }
+        });
+    }
+
     void createMQTTClient(Device device) {
         Uri mqttUri = Uri.parse(device.mqtt_uri);
         String host = mqttUri.getHost();

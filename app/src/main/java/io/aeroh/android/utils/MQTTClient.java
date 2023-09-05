@@ -44,22 +44,28 @@ public class MQTTClient {
 
         mqttConnectOptions.setCustomWebSocketHeaders(properties);
 
-        Log.i("MQTT Client", "Setting up MQTT Client");
+        Log.d("MQTTClient", "Setting up MQTT Client");
         mqttClient = new MqttAndroidClient(context, mqttUri, clientId, Ack.AUTO_ACK);
         mqttClient.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable cause) {
-                Log.i("MQTT Client", "connection lost");
+                Log.d("MQTTClient", "Connection Lost");
+                if (cause != null) {
+                    Log.d("MQTTClient", "cause: " + cause.getLocalizedMessage());
+                }
             }
 
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
-                Log.i("MQTT Client", "topic: " + topic + ", msg: " + new String(message.getPayload()));
+                Log.d("MQTTClient", "Message Arrived");
+                Log.d("MQTTClient", "topic: " + topic);
+                Log.d("MQTTClient", "message: " + message.toString());
             }
 
             @Override
             public void deliveryComplete(IMqttDeliveryToken token) {
-                Log.i("MQTT Client", "msg delivered");
+                Log.d("MQTTClient", "Delivery Complete");
+                Log.d("MQTTClient", "token: " + token.toString());
             }
         });
 
@@ -71,26 +77,28 @@ public class MQTTClient {
     }
 
     public void connect(Callback callback) {
-        Log.i("MQTT Client", "MQTT Client Connect");
+        Log.d("MQTTClient", "MQTT Client Connect");
         mqttClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
             @Override
             public void onSuccess(IMqttToken asyncActionToken) {
-                Log.i("MQTT Client", "connect succeed");
+                Log.d("MQTTClient", "connect succeed");
                 callback.onSuccess(asyncActionToken);
             }
 
             @Override
             public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                Log.i("MQTT Client", "connect failed");
+                Log.d("MQTTClient", "connect failed");
                 exception.printStackTrace();
                 callback.onFailure(asyncActionToken, exception);
             }
         });
 
-        Log.i("MQTT Client", "Initiated MQTT Connect with Callback");
+        Log.d("MQTTClient", "Initiated MQTT Connect with Callback");
     }
 
     public void publish(String topic, String messageStr, Callback callback) {
+        Log.d("MQTTClient", "Publishing to topic: " + topic);
+        Log.d("MQTTClient", "with message: " + messageStr);
         MqttMessage message = new MqttMessage();
         message.setPayload(messageStr.getBytes());
         message.setQos(0);
@@ -102,10 +110,10 @@ public class MQTTClient {
                 // https://github.com/eclipse/paho.mqtt.python/issues/440
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
-                        Log.i("MQTT Client IsConnected", String.format("%b at 300ms", mqttClient.isConnected()));
+                        Log.d("MQTTClient", "IsConnected " + String.format("%b at 300ms", mqttClient.isConnected()));
                         if (mqttClient.isConnected()) {
 
-                            Log.i("MQTT Client", "publish succeed!");
+                            Log.d("MQTTClient", "publish succeed!");
                             callback.onSuccess(asyncActionToken);
                         } else {
                             callback.onFailure(asyncActionToken, new Exception("Likely Authorization Error"));
@@ -116,10 +124,31 @@ public class MQTTClient {
 
             @Override
             public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                Log.i("MQTT Client", "publish failed!");
+                Log.d("MQTTClient", "publish failed!");
                 callback.onFailure(asyncActionToken, exception);
             }
         });
+    }
+
+    public void subscribe(String topic, Callback callback) {
+        Log.d("MQTTClient", "Subscribing to topic: " + topic);
+        mqttClient.subscribe(topic, 1, null, new IMqttActionListener() {
+            @Override
+            public void onSuccess(IMqttToken asyncActionToken) {
+                Log.d("MQTTClient", "subscribeOnSuccess");
+                callback.onSuccess(asyncActionToken);
+            }
+
+            @Override
+            public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                Log.d("MQTTClient", "subscribeOnFailure");
+                callback.onFailure(asyncActionToken, exception);
+            }
+        });
+    }
+
+    public void unsubscribe(String topic) {
+        mqttClient.unsubscribe(topic);
     }
 
     public boolean isConnected() {
@@ -128,5 +157,6 @@ public class MQTTClient {
 
     public void disconnect() {
         mqttClient.disconnect();
+        Log.d("MQTTClient", "Disconnected");
     }
 }
