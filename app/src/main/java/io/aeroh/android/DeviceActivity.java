@@ -6,9 +6,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -29,10 +27,6 @@ import java.util.HashMap;
 import io.aeroh.android.models.Device;
 
 import io.aeroh.android.utils.MQTTClient;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class DeviceActivity extends AppCompatActivity {
     MQTTClient mqttClient = null;
