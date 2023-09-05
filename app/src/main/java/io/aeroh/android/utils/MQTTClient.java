@@ -1,8 +1,11 @@
 package io.aeroh.android.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -12,7 +15,6 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import java.util.HashMap;
 import java.util.Properties;
 
 import info.mqtt.android.service.Ack;
@@ -24,9 +26,25 @@ public class MQTTClient {
     MqttConnectOptions mqttConnectOptions = null;
     MqttAndroidClient mqttClient = null;
 
-    public MQTTClient(Context context, String mqttUri, HashMap<String, String> headers) {
-        Log.d("USING MQTT_URI", mqttUri);
+    public enum MQTTClientStatus {
+        Disconnected,
+        Connecting,
+        Connected,
+        ConnectionFailed,
+    }
 
+    public MQTTClientStatus mqttClientStatus = MQTTClientStatus.Disconnected;
+
+    public MQTTClient(Context context, String mqttUriGeneric, String thingName) {
+        // Create Web Socket Based MQTT Url
+        Uri mqttUri = Uri.parse(mqttUriGeneric);
+        String host = mqttUri.getHost();
+        String scheme = "wss";
+        int port = 443;
+        String mqttUriStr = String.format("%s://%s:%d", scheme, host, port);
+        Log.d("MQTTClient", "Using MQTT_URI: " + mqttUriStr);
+
+        // Generate Request Headers
         mqttConnectOptions = new MqttConnectOptions();
         Properties properties = new Properties();
         properties.setProperty("X-Amz-CustomAuthorizer-Name", "Aeroh_One_Mobile_App_Authorizer");
@@ -37,15 +55,19 @@ public class MQTTClient {
         properties.setProperty("X-Aeroh-App-Version-Code", String.valueOf(BuildConfig.VERSION_CODE));
         properties.setProperty("X-Aeroh-App-Version-Name", BuildConfig.VERSION_NAME);
 
-        for (String key : headers.keySet()) {
-            String value = headers.get(key);
-            properties.setProperty(key, value);
+        SharedPreferences shared_preferences = context.getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
+        String access_token = shared_preferences.getString("access_token", null);
+        if (access_token != null) {
+            properties.put("X-Aeroh-Oauth2-Access-Token", access_token);
         }
+
+        String[] aerohDevices = new String[] { thingName };
+        properties.put("X-Aeroh-Devices", TextUtils.join(",", aerohDevices));
 
         mqttConnectOptions.setCustomWebSocketHeaders(properties);
 
         Log.d("MQTTClient", "Setting up MQTT Client");
-        mqttClient = new MqttAndroidClient(context, mqttUri, clientId, Ack.AUTO_ACK);
+        mqttClient = new MqttAndroidClient(context, mqttUriStr, clientId, Ack.AUTO_ACK);
         mqttClient.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable cause) {
@@ -78,16 +100,27 @@ public class MQTTClient {
 
     public void connect(Callback callback) {
         Log.d("MQTTClient", "MQTT Client Connect");
+
+        if (mqttClientStatus == MQTTClientStatus.Connecting ||
+                mqttClientStatus == MQTTClientStatus.Connected) {
+            Log.d("MQTTClient", "Already connected to MQTT Server.");
+            return;
+        }
+
+        mqttClientStatus = MQTTClientStatus.Connecting;
+
         mqttClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
             @Override
             public void onSuccess(IMqttToken asyncActionToken) {
                 Log.d("MQTTClient", "connect succeed");
+                mqttClientStatus = MQTTClientStatus.Connected;
                 callback.onSuccess(asyncActionToken);
             }
 
             @Override
             public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                 Log.d("MQTTClient", "connect failed");
+                mqttClientStatus = MQTTClientStatus.ConnectionFailed;
                 exception.printStackTrace();
                 callback.onFailure(asyncActionToken, exception);
             }
@@ -157,6 +190,7 @@ public class MQTTClient {
 
     public void disconnect() {
         mqttClient.disconnect();
+        mqttClientStatus = MQTTClientStatus.Disconnected;
         Log.d("MQTTClient", "Disconnected");
     }
 }

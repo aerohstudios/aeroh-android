@@ -3,6 +3,8 @@ package io.aeroh.android
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +26,8 @@ import io.aeroh.android.FirmwareUpdateActivity.FirmwareUpdateStatus.*
 import io.aeroh.android.ui.theme.AerohandroidTheme
 
 import io.aeroh.android.models.Device
+import io.aeroh.android.utils.MQTTClient
+import org.eclipse.paho.client.mqttv3.IMqttToken
 
 class FirmwareUpdateActivity : ComponentActivity() {
     var device: Device? = null
@@ -39,10 +43,14 @@ class FirmwareUpdateActivity : ComponentActivity() {
 
     private var firmwareUpdateStatus = mutableStateOf(CHECKING_DEVICE_VERSION)
 
+    private var mqttClient: MQTTClient? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         device = getIntent()?.getExtras()?.get("device") as Device
+        mqttClient = MQTTClient(applicationContext, device!!.mqtt_uri, device!!.thing_name)
+
         getFirmwareVersion()
 
         setContent {
@@ -66,10 +74,54 @@ class FirmwareUpdateActivity : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        connectToMQTTServer()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mqttClient!!.disconnect()
+    }
+
     private fun getFirmwareVersion() {
         Handler(Looper.getMainLooper()).postDelayed({
             firmwareUpdateStatus.value = NO_UPDATE_REQUIRED
         }, 2000)
+    }
+
+    fun connectToMQTTServer() {
+        mqttClient!!.connect(object : MQTTClient.Callback {
+            override fun onSuccess(asyncActionToken: IMqttToken) {
+                subscribeToMQTTServer()
+                Toast.makeText(
+                    applicationContext,
+                    "Connected to the MQTT Server!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
+                Toast.makeText(
+                    applicationContext,
+                    "Failed to connect to MQTT Server!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
+    fun subscribeToMQTTServer() {
+        val topic = String.format("%s/responses", device!!.thing_name)
+        mqttClient!!.subscribe(topic, object : MQTTClient.Callback {
+            override fun onSuccess(asyncActionToken: IMqttToken) {
+                Log.d("FirmwareUpdateActivity", "MQTT Subscribe Success")
+            }
+
+            override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
+                Log.d("FirmwareUpdateActivity", "MQTT Subscribe Failure")
+            }
+        })
     }
 }
 
