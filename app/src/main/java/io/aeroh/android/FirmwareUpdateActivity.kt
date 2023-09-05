@@ -14,7 +14,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,88 +73,57 @@ class FirmwareUpdateActivity : ComponentActivity() {
     }
 }
 
+
 @Composable
-fun CheckDeviceVersionView() {
+fun PlaceHolderView(message: String) {
     Row(
         horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(top = 8.dp)
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
     ) {
         Text(
-            text = "Checking for updates...",
-            fontSize = 24.sp
+            text = message,
+            fontSize = 24.sp,
+            textAlign = TextAlign.Center
         )
     }
+}
+
+@Composable
+fun CheckDeviceVersionView() {
+    PlaceHolderView("Checking for updates...")
 }
 
 @Composable
 fun NoUpdateRequiredView() {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(top = 8.dp)
-    ) {
-        Text(
-            text = "Your device is up to date",
-            fontSize = 24.sp
-        )
-    }
+    PlaceHolderView("Your device is up to date")
 }
 
 @Composable
 fun DeviceUnreachableView() {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(top = 8.dp)
-    ) {
-        Text(
-            text = "Device unreachable. Make sure it's connected and provisioned.",
-            fontSize = 24.sp
-        )
-    }
+    PlaceHolderView("Device unreachable!\nMake sure it's connected and provisioned.")
 }
 
 @Composable
 fun StartUpdatePromptView() {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(top = 8.dp)
-    ) {
-        Text(
-            text = "Shall we update the firmware?",
-            fontSize = 24.sp
-        )
-    }
+    PlaceHolderView("Shall we update the firmware?")
 }
 
 @Composable
 fun UpdateInProgressView() {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(top = 8.dp)
-    ) {
-        Text(
-            text = "Updating right now...",
-            fontSize = 24.sp
-        )
-    }
+    PlaceHolderView("Updating right now...")
 }
 
 @Composable
 fun UpdateCompleteView() {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(top = 8.dp)
-    ) {
-        Text(
-            text = "Update completed successfully",
-            fontSize = 24.sp
-        )
-    }
+    PlaceHolderView("Update completed successfully")
 }
 
 @Composable
 fun UpdateFailedView() {
     Row(
         horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(top = 8.dp)
     ) {
         Text(
@@ -164,13 +135,91 @@ fun UpdateFailedView() {
 
 @Preview(showBackground = true)
 @Composable
-fun FirmwareUpdateActivityPreview() {
+fun CheckDeviceVersionViewPreview() {
     AerohandroidTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
             CheckDeviceVersionView()
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun NoUpdateRequiredViewPreview() {
+    AerohandroidTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            NoUpdateRequiredView()
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DeviceUnreachableViewPreview() {
+    AerohandroidTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            DeviceUnreachableView()
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun StartUpdatePromptViewPreview() {
+    AerohandroidTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            StartUpdatePromptView()
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun UpdateInProgressViewPreview() {
+    AerohandroidTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            UpdateInProgressView()
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun UpdateCompleteViewPreview() {
+    AerohandroidTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            UpdateCompleteView()
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun UpdateFailedViewPreview() {
+    AerohandroidTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            UpdateFailedView()
         }
     }
 }
