@@ -8,66 +8,89 @@
     android:background="@color/secondary_black"
     tools:context=".DevicesActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/devicesActivityToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/secondary_black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/titleUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="@string/toolbar_heading_1"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:layout_marginBottom="-10dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/toolbar_heading_2"
+                android:textColor="@color/grey"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/hamburgerIcon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="top|end"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_hamburger" />
+
+    </androidx.appcompat.widget.Toolbar>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/devicesActivityToolbar"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@color/secondary_black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
+            android:layout_height="60dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:background="@drawable/add_device_background"
+            android:gravity="center"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginTop="100dp">
 
-            <LinearLayout
+            <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/add_new_device_text"
+                android:textColor="@color/white"
+                android:layout_marginHorizontal="15dp"
+                android:fontFamily="@font/poppins_bold"
+                android:layout_marginTop="2dp"
+                android:layout_marginStart="10dp"
+                android:textSize="20sp"/>
 
-                <TextView
-                    android:id="@+id/txtGreeting"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:text="@string/toolbar_heading_1"
-                    android:textColor="@color/white"
-                    android:textSize="24sp" />
+            <Button
+                android:id="@+id/btnAddDevice"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/round_button"
+                android:fontFamily="@font/font_awesome_6_pro_regular"
+                android:text="@string/positive_sign"
+                android:textColor="@color/black"
+                android:layout_marginHorizontal="25dp"
+                android:textSize="18sp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/toolbar_heading_2"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/hamburgerIcon"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="top|end"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/ic_hamburger" />
-
-        </androidx.appcompat.widget.Toolbar>
-
-        <Button
-            android:id="@+id/btnAddDevice"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/round_button"
-            android:fontFamily="@font/font_awesome_6_pro_regular"
-            android:text="\ue59e"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toTopOf="@+id/devices_list_view"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/devicesActivityToolbar" />
+        </LinearLayout>
 
         <ListView
             android:id="@+id/devices_list_view"
