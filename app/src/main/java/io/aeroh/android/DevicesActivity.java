@@ -3,11 +3,13 @@ package io.aeroh.android;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -23,6 +25,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -34,6 +37,7 @@ import io.aeroh.android.models.Device;
 import java.util.List;
 import java.util.Objects;
 
+import io.aeroh.android.models.User;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -53,6 +57,7 @@ public class DevicesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         updateDevicesList();
+        updateUser();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_devices);
@@ -77,7 +82,7 @@ public class DevicesActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if (item.getItemId() == R.id.logOutButton) {
-                    logout();
+                    showLogOutAlertDialogue();
                 }
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -139,11 +144,11 @@ public class DevicesActivity extends AppCompatActivity {
     }
 
     void updateDevicesList() {
-        SharedPreferences shared_preferences = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
-        String access_token = shared_preferences.getString("access_token", null);
+        SharedPreferences userAccessPreference = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
+        String access_token = userAccessPreference.getString("access_token", null);
         if (access_token != null) {
-            ApiServer api_server = new ApiServer(access_token);
-            Call<List<Device>> call = api_server.devices.list();
+            ApiServer apiServer = new ApiServer(access_token);
+            Call<List<Device>> call = apiServer.devices.list();
             call.enqueue(new Callback<List<Device>>() {
                 @Override
                 public void onResponse(Call<List<Device>> call, Response<List<Device>> response) {
@@ -190,5 +195,55 @@ public class DevicesActivity extends AppCompatActivity {
             mac_addr.setText(device.mac_addr);
             return convertView;
         }
+    }
+
+    void updateUserDetails(String name, String email) {
+        TextView userName = findViewById(R.id.regUserName);
+        userName.setText(name);
+        TextView userEmail = findViewById(R.id.regUserEmail);
+        userEmail.setText(email);
+    }
+
+    void updateUser() {
+        SharedPreferences userAccessPreference = getApplicationContext().getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
+        String access_token = userAccessPreference.getString("access_token", null);
+        if (access_token != null) {
+            ApiServer apiServer = new ApiServer(access_token);
+            Call<List<User>> call = apiServer.users.list();
+            call.enqueue(new Callback<List<User>>() {
+                @Override
+                public void onResponse(@NonNull Call<List<User>> call, @NonNull Response<List<User>> response) {
+                    int statusCode = response.code();
+                    if (statusCode == 200) {
+                        assert response.body() != null;
+                        User user = response.body().get(0);
+                        updateUserDetails(user.firstName, user.email);
+                    } else if (statusCode == 401) {
+                        logout();
+                    } else {
+                        Toast.makeText(DevicesActivity.this, "Something Went Wrong", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<User>> call, Throwable t) {
+                    Toast.makeText(DevicesActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    void showLogOutAlertDialogue() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(DevicesActivity.this);
+        builder.setTitle("Logout?");
+        builder.setMessage("Are you sure, you want to log out");
+        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                logout();
+            }
+        });
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
     }
 }
