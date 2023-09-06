@@ -13,7 +13,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -84,12 +83,6 @@ public class DevicesActivity extends AppCompatActivity {
                 if (item.getItemId() == R.id.logOutButton) {
                     showLogOutAlertDialogue();
                 }
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        hamburgerDrawer.closeDrawer(GravityCompat.END);
-                    }
-                }, drawerCloseDelay);
                 return true;
             }
         });
@@ -132,15 +125,10 @@ public class DevicesActivity extends AppCompatActivity {
     }
 
     void logout() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferences userAccessPreferences = getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
-                userAccessPreferences.edit().clear().apply();
-                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                finish();
-            }
-        }, logoutDelay);
+        SharedPreferences userAccessPreferences = getSharedPreferences("Aeroh", Context.MODE_PRIVATE);
+        userAccessPreferences.edit().clear().apply();
+        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+        finish();
     }
 
     void updateDevicesList() {
