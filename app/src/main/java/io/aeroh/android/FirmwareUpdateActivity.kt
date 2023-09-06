@@ -8,13 +8,17 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +41,7 @@ class FirmwareUpdateActivity : ComponentActivity() {
         NO_UPDATE_REQUIRED,
         DEVICE_UNREACHABLE,
         START_UPDATE_PROMPT,
+        UPDATE_CANCELLED,
         UPDATE_IN_PROGRESS,
         UPDATE_COMPLETE,
         UPDATE_FAILED
@@ -66,7 +71,8 @@ class FirmwareUpdateActivity : ComponentActivity() {
                         CHECKING_DEVICE_VERSION -> CheckDeviceVersionView()
                         NO_UPDATE_REQUIRED -> NoUpdateRequiredView(deviceFirmwareVersion, latestFirmwareVersion)
                         DEVICE_UNREACHABLE -> DeviceUnreachableView()
-                        START_UPDATE_PROMPT -> StartUpdatePromptView(deviceFirmwareVersion, latestFirmwareVersion)
+                        START_UPDATE_PROMPT -> StartUpdatePromptView(firmwareUpdateStatus, deviceFirmwareVersion, latestFirmwareVersion)
+                        UPDATE_CANCELLED -> finish()
                         UPDATE_IN_PROGRESS -> UpdateInProgressView()
                         UPDATE_COMPLETE -> UpdateCompleteView()
                         UPDATE_FAILED -> UpdateFailedView()
@@ -226,8 +232,35 @@ fun DeviceUnreachableView() {
 }
 
 @Composable
-fun StartUpdatePromptView(deviceFirmwareVersion: String, latestFirmwareVersion: String) {
-    PlaceHolderView("Shall we update the firmware?\nCurrent Firmware Version: $deviceFirmwareVersion\nNew Firmware Version: $latestFirmwareVersion")
+fun StartUpdatePromptView(firmwareUpdateStatus: MutableState<FirmwareUpdateActivity.FirmwareUpdateStatus>, deviceFirmwareVersion: String, latestFirmwareVersion: String) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        PlaceHolderView("Shall we update the firmware?\nCurrent Firmware Version: $deviceFirmwareVersion\nNew Firmware Version: $latestFirmwareVersion")
+        Row (
+            horizontalArrangement = Arrangement.spacedBy(space = 16.dp, alignment = Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Button(
+                onClick = {
+                    firmwareUpdateStatus.value = UPDATE_IN_PROGRESS
+                }
+            ) {
+                Text(
+                    text = "Update",
+                )
+            }
+            Button(
+                onClick = {
+                    firmwareUpdateStatus.value = UPDATE_CANCELLED
+                }
+            ) {
+                Text(text = "Cancel")
+            }
+        }
+    }
 }
 
 @Composable
@@ -301,7 +334,7 @@ fun StartUpdatePromptViewPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            StartUpdatePromptView("0.1.1", "0.1.2")
+            StartUpdatePromptView(mutableStateOf(START_UPDATE_PROMPT),"0.1.1", "0.1.2")
         }
     }
 }
