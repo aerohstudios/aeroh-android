@@ -66,7 +66,7 @@ class FirmwareUpdateActivity : ComponentActivity() {
                         CHECKING_DEVICE_VERSION -> CheckDeviceVersionView()
                         NO_UPDATE_REQUIRED -> NoUpdateRequiredView(deviceFirmwareVersion, latestFirmwareVersion)
                         DEVICE_UNREACHABLE -> DeviceUnreachableView()
-                        START_UPDATE_PROMPT -> StartUpdatePromptView()
+                        START_UPDATE_PROMPT -> StartUpdatePromptView(deviceFirmwareVersion, latestFirmwareVersion)
                         UPDATE_IN_PROGRESS -> UpdateInProgressView()
                         UPDATE_COMPLETE -> UpdateCompleteView()
                         UPDATE_FAILED -> UpdateFailedView()
@@ -226,8 +226,8 @@ fun DeviceUnreachableView() {
 }
 
 @Composable
-fun StartUpdatePromptView() {
-    PlaceHolderView("Shall we update the firmware?")
+fun StartUpdatePromptView(deviceFirmwareVersion: String, latestFirmwareVersion: String) {
+    PlaceHolderView("Shall we update the firmware?\nCurrent Firmware Version: $deviceFirmwareVersion\nNew Firmware Version: $latestFirmwareVersion")
 }
 
 @Composable
@@ -301,7 +301,7 @@ fun StartUpdatePromptViewPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            StartUpdatePromptView()
+            StartUpdatePromptView("0.1.1", "0.1.2")
         }
     }
 }
