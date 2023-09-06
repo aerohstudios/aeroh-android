@@ -197,11 +197,13 @@ public class DevicesActivity extends AppCompatActivity {
         }
     }
 
-    void updateUserDetails(String name, String email) {
+    void updateUserDetails(String firstName, String email) {
         TextView userName = findViewById(R.id.regUserName);
-        userName.setText(name);
+        userName.setText(firstName);
         TextView userEmail = findViewById(R.id.regUserEmail);
         userEmail.setText(email);
+        TextView greetingText = findViewById(R.id.txtGreeting);
+        greetingText.setText("Hi " + firstName);
     }
 
     void updateUser() {
