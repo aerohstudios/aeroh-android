@@ -109,10 +109,10 @@ class FirmwareUpdateActivity : ComponentActivity() {
         }, 3000)
     }
 
-    private fun setDeviceFirmwareVersion(currentDeviceFirmwareVersion: String) {
-        var latestStableFirmwareVersion = "0.0.0";
-        deviceFirmwareVersion = currentDeviceFirmwareVersion
-        if (isUpdateRequired(currentDeviceFirmwareVersion, latestStableFirmwareVersion)) {
+    private fun setDeviceFirmwareVersion(deviceFirmwareVersion: String) {
+        latestFirmwareVersion = device!!.latestFirmwareVersion;
+        this.deviceFirmwareVersion = deviceFirmwareVersion
+        if (isUpdateRequired(deviceFirmwareVersion, latestFirmwareVersion)) {
             firmwareUpdateStatus.value = START_UPDATE_PROMPT
         } else {
             firmwareUpdateStatus.value = NO_UPDATE_REQUIRED

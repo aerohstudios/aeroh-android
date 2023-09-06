@@ -18,4 +18,7 @@ public class Device extends Resource {
     @Json(name="mqtt-uri") public String mqtt_uri;
     @Json(name="root-ca") public String root_ca;
 
+    @Json(name="latest-firmware-version") public String latestFirmwareVersion;
+    @Json(name="latest-firmware-url") public String latestFirmwareURL;
+
 }
