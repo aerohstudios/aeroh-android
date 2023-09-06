@@ -35,6 +35,8 @@ public class MQTTClient {
 
     public MQTTClientStatus mqttClientStatus = MQTTClientStatus.Disconnected;
 
+    ArrivedMessageCallback arrivedMessageCallback = null;
+
     public MQTTClient(Context context, String mqttUriGeneric, String thingName) {
         // Create Web Socket Based MQTT Url
         Uri mqttUri = Uri.parse(mqttUriGeneric);
@@ -82,6 +84,9 @@ public class MQTTClient {
                 Log.d("MQTTClient", "Message Arrived");
                 Log.d("MQTTClient", "topic: " + topic);
                 Log.d("MQTTClient", "message: " + message.toString());
+                if (arrivedMessageCallback != null) {
+                    arrivedMessageCallback.call(topic, message);
+                }
             }
 
             @Override
@@ -96,6 +101,10 @@ public class MQTTClient {
     public interface Callback {
         void onSuccess(IMqttToken asyncActionToken);
         void onFailure(IMqttToken asyncActionToken, Throwable exception);
+    }
+
+    public interface ArrivedMessageCallback {
+        void call(String topic, MqttMessage message);
     }
 
     public void connect(Callback callback) {
@@ -163,19 +172,26 @@ public class MQTTClient {
         });
     }
 
-    public void subscribe(String topic, Callback callback) {
+    public void subscribe(String topic, Callback callback, ArrivedMessageCallback arrivedMessageCallback) {
         Log.d("MQTTClient", "Subscribing to topic: " + topic);
+        if (arrivedMessageCallback != null) {
+            this.arrivedMessageCallback = arrivedMessageCallback;
+        }
         mqttClient.subscribe(topic, 1, null, new IMqttActionListener() {
             @Override
             public void onSuccess(IMqttToken asyncActionToken) {
                 Log.d("MQTTClient", "subscribeOnSuccess");
-                callback.onSuccess(asyncActionToken);
+                if (callback != null) {
+                    callback.onSuccess(asyncActionToken);
+                }
             }
 
             @Override
             public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                 Log.d("MQTTClient", "subscribeOnFailure");
-                callback.onFailure(asyncActionToken, exception);
+                if (callback != null) {
+                    callback.onFailure(asyncActionToken, exception);
+                }
             }
         });
     }

@@ -23,11 +23,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.aeroh.android.FirmwareUpdateActivity.FirmwareUpdateStatus.*
-import io.aeroh.android.ui.theme.AerohandroidTheme
-
 import io.aeroh.android.models.Device
+import io.aeroh.android.ui.theme.AerohandroidTheme
 import io.aeroh.android.utils.MQTTClient
 import org.eclipse.paho.client.mqttv3.IMqttToken
+import org.json.JSONObject
+import java.util.UUID
 
 class FirmwareUpdateActivity : ComponentActivity() {
     var device: Device? = null
@@ -45,13 +46,15 @@ class FirmwareUpdateActivity : ComponentActivity() {
 
     private var mqttClient: MQTTClient? = null
 
+    private var firmwareVersionRequestIds: MutableList<String> = mutableListOf()
+    private var deviceFirmwareVersion: String = "0.0.0";
+    private var latestFirmwareVersion: String = "0.0.0"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         device = getIntent()?.getExtras()?.get("device") as Device
         mqttClient = MQTTClient(applicationContext, device!!.mqtt_uri, device!!.thing_name)
-
-        getFirmwareVersion()
 
         setContent {
             AerohandroidTheme {
@@ -61,7 +64,7 @@ class FirmwareUpdateActivity : ComponentActivity() {
                 ) {
                     when (firmwareUpdateStatus.value) {
                         CHECKING_DEVICE_VERSION -> CheckDeviceVersionView()
-                        NO_UPDATE_REQUIRED -> NoUpdateRequiredView()
+                        NO_UPDATE_REQUIRED -> NoUpdateRequiredView(deviceFirmwareVersion, latestFirmwareVersion)
                         DEVICE_UNREACHABLE -> DeviceUnreachableView()
                         START_UPDATE_PROMPT -> StartUpdatePromptView()
                         UPDATE_IN_PROGRESS -> UpdateInProgressView()
@@ -84,10 +87,55 @@ class FirmwareUpdateActivity : ComponentActivity() {
         mqttClient!!.disconnect()
     }
 
-    private fun getFirmwareVersion() {
+    private fun askDeviceFirmwareVersion(retryCount: Int) {
+        if (retryCount == 0) {
+            firmwareUpdateStatus.value = DEVICE_UNREACHABLE
+            return
+        }
+        val topic = String.format("%s/commands", device!!.thing_name)
+        val requestMessage = JSONObject()
+        val requestId = UUID.randomUUID().toString()
+        firmwareVersionRequestIds.add(requestId)
+        requestMessage.put("requestId", requestId)
+        requestMessage.put("command", "firmware")
+        requestMessage.put("actionType", "version")
+
+        mqttClient!!.publish(topic, requestMessage.toString(), null)
+
         Handler(Looper.getMainLooper()).postDelayed({
+            if (firmwareUpdateStatus.value == CHECKING_DEVICE_VERSION) {
+                askDeviceFirmwareVersion(retryCount-1);
+            }
+        }, 3000)
+    }
+
+    private fun setDeviceFirmwareVersion(currentDeviceFirmwareVersion: String) {
+        var latestStableFirmwareVersion = "0.0.0";
+        deviceFirmwareVersion = currentDeviceFirmwareVersion
+        if (isUpdateRequired(currentDeviceFirmwareVersion, latestStableFirmwareVersion)) {
+            firmwareUpdateStatus.value = START_UPDATE_PROMPT
+        } else {
             firmwareUpdateStatus.value = NO_UPDATE_REQUIRED
-        }, 2000)
+        }
+    }
+
+    private fun isUpdateRequired(deviceVersionStr: String, cloudVersionStr: String): Boolean {
+        val deviceVersion = FirmwareVersion(deviceVersionStr)
+        val cloudVersion = FirmwareVersion(cloudVersionStr)
+
+        if (cloudVersion.major > deviceVersion.major) {
+            return true
+        } else if (cloudVersion.major == deviceVersion.major) {
+            if (cloudVersion.minor > deviceVersion.minor) {
+                return true
+            } else if (cloudVersion.minor == deviceVersion.minor) {
+                if (cloudVersion.patch > deviceVersion.patch) {
+                    return true
+                }
+            }
+        }
+
+        return false;
     }
 
     fun connectToMQTTServer() {
@@ -113,18 +161,39 @@ class FirmwareUpdateActivity : ComponentActivity() {
 
     fun subscribeToMQTTServer() {
         val topic = String.format("%s/responses", device!!.thing_name)
+
         mqttClient!!.subscribe(topic, object : MQTTClient.Callback {
             override fun onSuccess(asyncActionToken: IMqttToken) {
-                Log.d("FirmwareUpdateActivity", "MQTT Subscribe Success")
+                if (firmwareUpdateStatus.value == CHECKING_DEVICE_VERSION) {
+                    askDeviceFirmwareVersion(10)
+                }
             }
-
             override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
                 Log.d("FirmwareUpdateActivity", "MQTT Subscribe Failure")
             }
-        })
+        }) { _, message ->
+            val response = JSONObject(message.toString())
+            val requestId = response.get("requestId") as String
+            if (firmwareVersionRequestIds.contains(requestId)) {
+                val version = response.get("version") as String
+                setDeviceFirmwareVersion(version)
+            }
+        }
+
     }
 }
 
+class FirmwareVersion(val version: String) {
+    var major: Int = 0;
+    var minor: Int = 0;
+    var patch: Int = 0;
+    init {
+        var (majorStr, minorStr, patchStr) = version.split(".")
+        major = majorStr.toInt()
+        minor = minorStr.toInt()
+        patch = patchStr.toInt()
+    }
+}
 
 @Composable
 fun PlaceHolderView(message: String) {
@@ -147,8 +216,8 @@ fun CheckDeviceVersionView() {
 }
 
 @Composable
-fun NoUpdateRequiredView() {
-    PlaceHolderView("Your device is up to date")
+fun NoUpdateRequiredView(deviceFirmwareVersion: String, latestFirmwareVersion: String) {
+    PlaceHolderView("Your device is up to date \nDevice Firmware Version: $deviceFirmwareVersion\nLatest Firmware Version: $latestFirmwareVersion")
 }
 
 @Composable
@@ -206,7 +275,7 @@ fun NoUpdateRequiredViewPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            NoUpdateRequiredView()
+            NoUpdateRequiredView("0.1.2", "0.1.2")
         }
     }
 }

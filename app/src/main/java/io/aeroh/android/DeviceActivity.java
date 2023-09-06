@@ -16,11 +16,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 import io.aeroh.android.models.Device;
@@ -180,16 +178,6 @@ public class DeviceActivity extends AppCompatActivity {
 
     void subscribeToMQTTServer() {
         String topic = String.format("%s/responses", device.thing_name);;
-        mqttClient.subscribe(topic, new MQTTClient.Callback() {
-            @Override
-            public void onSuccess(IMqttToken asyncActionToken) {
-                Log.d("DeviceActivity", "MQTT Subscribe Success");
-            }
-
-            @Override
-            public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                Log.d("DeviceActivity", "MQTT Subscribe Failure");
-            }
-        });
+        mqttClient.subscribe(topic, null, null);
     }
 }
