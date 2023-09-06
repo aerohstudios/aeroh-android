@@ -17,8 +17,11 @@ import android.widget.Toast;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import io.aeroh.android.models.Device;
 
@@ -62,8 +65,15 @@ public class DeviceActivity extends AppCompatActivity {
         btnTogglePower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String [] command = new String[] { "power", "toggle" };
-                attachBtnMQTTOnClickListener(view, context, device, command);
+                JSONObject requestMessage = new JSONObject();
+                try {
+                    requestMessage.put("requestId", UUID.randomUUID());
+                    requestMessage.put("command", "power");
+                    requestMessage.put("actionType", "toggle");
+                } catch (JSONException e) {
+                    Log.e("DeviceActivity", e.getLocalizedMessage());
+                }
+                attachBtnMQTTOnClickListener(view, context, device, requestMessage);
             }
         });
 
@@ -71,8 +81,15 @@ public class DeviceActivity extends AppCompatActivity {
         btnSpeedChange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String [] command = new String[] { "speed", "change" };
-                attachBtnMQTTOnClickListener(view, context, device, command);
+                JSONObject requestMessage = new JSONObject();
+                try {
+                    requestMessage.put("requestId", UUID.randomUUID());
+                    requestMessage.put("command", "speed");
+                    requestMessage.put("actionType", "change");
+                } catch (JSONException e) {
+                    Log.e("DeviceActivity", e.getLocalizedMessage());
+                }
+                attachBtnMQTTOnClickListener(view, context, device, requestMessage);
             }
         });
 
@@ -117,12 +134,10 @@ public class DeviceActivity extends AppCompatActivity {
         mqttClient.disconnect();
     }
 
-    void attachBtnMQTTOnClickListener(View view, Context context, Device device, String[] command) {
+    void attachBtnMQTTOnClickListener(View view, Context context, Device device, JSONObject request) {
         view.setEnabled(false);
 
         String topic = String.format("%s/commands", device.thing_name);
-        JSONArray jsonCommand = new JSONArray(Arrays.asList(command));
-        String message = jsonCommand.toString();
 
         MQTTClient.Callback publishCallback = new MQTTClient.Callback() {
             @Override
@@ -138,7 +153,7 @@ public class DeviceActivity extends AppCompatActivity {
         };
 
         if (mqttClient.mqttClientStatus == MQTTClientStatus.Connected) {
-            mqttClient.publish(topic, message, publishCallback);
+            mqttClient.publish(topic, request.toString(), publishCallback);
         } else if (mqttClient.mqttClientStatus == MQTTClientStatus.Connecting) {
             view.setEnabled(true);
             Toast.makeText(context, "Please wait till we connect to the MQTT Server!", Toast.LENGTH_SHORT).show();
