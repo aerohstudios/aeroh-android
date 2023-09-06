@@ -156,9 +156,13 @@ public class MQTTClient {
                         if (mqttClient.isConnected()) {
 
                             Log.d("MQTTClient", "publish succeed!");
-                            callback.onSuccess(asyncActionToken);
+                            if (callback != null) {
+                                callback.onSuccess(asyncActionToken);
+                            }
                         } else {
-                            callback.onFailure(asyncActionToken, new Exception("Likely Authorization Error"));
+                            if (callback != null) {
+                                callback.onFailure(asyncActionToken, new Exception("Likely Authorization Error"));
+                            }
                         }
                     }
                 }, 300);
