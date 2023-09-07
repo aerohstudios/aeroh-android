@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.aeroh.android.FirmwareUpdateActivity.FirmwareUpdateStatus.*
 import io.aeroh.android.models.Device
-import io.aeroh.android.ui.theme.AerohandroidTheme
+import io.aeroh.android.ui.theme.AerohAndroidTheme
 import io.aeroh.android.utils.MQTTClient
 import org.eclipse.paho.client.mqttv3.IMqttToken
 import org.json.JSONObject
@@ -62,7 +62,7 @@ class FirmwareUpdateActivity : ComponentActivity() {
         mqttClient = MQTTClient(applicationContext, device!!.mqtt_uri, device!!.thing_name)
 
         setContent {
-            AerohandroidTheme {
+            AerohAndroidTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -290,7 +290,7 @@ fun UpdateFailedView() {
 @Preview(showBackground = true)
 @Composable
 fun CheckDeviceVersionViewPreview() {
-    AerohandroidTheme {
+    AerohAndroidTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -303,7 +303,7 @@ fun CheckDeviceVersionViewPreview() {
 @Preview(showBackground = true)
 @Composable
 fun NoUpdateRequiredViewPreview() {
-    AerohandroidTheme {
+    AerohAndroidTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -316,7 +316,7 @@ fun NoUpdateRequiredViewPreview() {
 @Preview(showBackground = true)
 @Composable
 fun DeviceUnreachableViewPreview() {
-    AerohandroidTheme {
+    AerohAndroidTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -329,7 +329,7 @@ fun DeviceUnreachableViewPreview() {
 @Preview(showBackground = true)
 @Composable
 fun StartUpdatePromptViewPreview() {
-    AerohandroidTheme {
+    AerohAndroidTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -342,7 +342,7 @@ fun StartUpdatePromptViewPreview() {
 @Preview(showBackground = true)
 @Composable
 fun UpdateInProgressViewPreview() {
-    AerohandroidTheme {
+    AerohAndroidTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -355,7 +355,7 @@ fun UpdateInProgressViewPreview() {
 @Preview(showBackground = true)
 @Composable
 fun UpdateCompleteViewPreview() {
-    AerohandroidTheme {
+    AerohAndroidTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -368,7 +368,7 @@ fun UpdateCompleteViewPreview() {
 @Preview(showBackground = true)
 @Composable
 fun UpdateFailedViewPreview() {
-    AerohandroidTheme {
+    AerohAndroidTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
