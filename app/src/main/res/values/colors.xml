@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="primary_yellow">@color/dl_action</color>
-    <color name="secondary_black">@color/dl_primary_black</color>
     <color name="grey">@color/dl_secondary_white</color>
     <color name="yellow">@color/dl_action</color>
     <color name="white">@color/dl_white</color>

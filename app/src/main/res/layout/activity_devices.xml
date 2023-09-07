@@ -5,7 +5,6 @@
     android:id="@+id/devicesActivityDrawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/secondary_black"
     tools:context=".DevicesActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,7 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:background="@color/secondary_black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -91,9 +89,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="end"
-        android:background="@color/secondary_black"
         app:headerLayout="@layout/devices_navigation_header"
-        app:itemBackground="@color/secondary_black"
         app:itemHorizontalPadding="30dp"
         app:itemIconPadding="15dp"
         app:itemIconSize="24dp"
