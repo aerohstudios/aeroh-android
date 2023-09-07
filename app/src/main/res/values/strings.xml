@@ -26,4 +26,7 @@
     <string name="first_name_txt">First Name</string>
     <string name="positive_sign"></string>
     <string name="add_new_device_text">Add a New Device</string>
+    <string name="devices_txt">Devices</string>
+    <string name="no_devices_txt1">No Devices Found</string>
+    <string name="no_devices_txt2">Please add a new device</string>
 </resources>
