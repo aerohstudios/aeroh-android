@@ -22,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,8 +43,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DevicesActivity extends AppCompatActivity {
-    private static final int logoutDelay = 1000;
-    private static final int drawerCloseDelay = 500;
     ListView devicesListView;
     DevicesArrayAdapter devicesArrayAdapter;
     DrawerLayout hamburgerDrawer;
@@ -99,7 +98,7 @@ public class DevicesActivity extends AppCompatActivity {
             }
         });
 
-        Button btnAddDevice = findViewById(R.id.btnAddDevice);
+        LinearLayout btnAddDevice = findViewById(R.id.btnAddDevice);
         btnAddDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -159,7 +158,14 @@ public class DevicesActivity extends AppCompatActivity {
 
     void populateDevicesList(List<Device> devices) {
         devicesArrayAdapter = new DevicesArrayAdapter(getApplicationContext(), devices);
-        devicesListView.setAdapter(devicesArrayAdapter);
+        LinearLayout noDevices = findViewById(R.id.noDeviceView);
+        if (devicesArrayAdapter.isEmpty()) {
+            devicesListView.setVisibility(View.INVISIBLE);
+            noDevices.setVisibility(View.VISIBLE);
+        } else {
+            noDevices.setVisibility(View.INVISIBLE);
+            devicesListView.setAdapter(devicesArrayAdapter);
+        }
     }
 
     static class DevicesArrayAdapter extends ArrayAdapter<Device> {
@@ -190,8 +196,9 @@ public class DevicesActivity extends AppCompatActivity {
         userName.setText(firstName);
         TextView userEmail = findViewById(R.id.regUserEmail);
         userEmail.setText(email);
-        TextView greetingText = findViewById(R.id.txtGreeting);
-        greetingText.setText("Hi " + firstName);
+        TextView greetingText = findViewById(R.id.titleUserName);
+        String greeting = "Hi, " + firstName;
+        greetingText.setText(greeting);
     }
 
     void updateUser() {
