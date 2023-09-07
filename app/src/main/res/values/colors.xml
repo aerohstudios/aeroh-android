@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_yellow">#FEC93A</color>
-    <color name="secondary_black">#100E14</color>
-    <color name="grey">#BEBEBF</color>
-    <color name="yellow">#FFC83A</color>
-    <color name="white">#FFFFFF</color>
-    <color name="yellow_brand">#FFFEC93A</color>
-    <color name="yellow_ncs">#FFFFD300</color>
-    <color name="yellow_munsell">#FFEFCC00</color>
-    <color name="yellow_royal">#FFFADA5E</color>
-    <color name="yellow_golden">#FFFFD700</color>
-    <color name="yellow_cyber">#FFFFD300</color>
-    <color name="yellow_safety">#FFEED202</color>
-    <color name="yellow_crayola">#FFFFAA1D</color>
-    <color name="black">#FF111111</color>
+    <color name="primary_yellow">@color/dl_action</color>
+    <color name="secondary_black">@color/dl_primary_black</color>
+    <color name="grey">@color/dl_secondary_white</color>
+    <color name="yellow">@color/dl_action</color>
+    <color name="white">@color/dl_white</color>
 
+    <color name="yellow_brand">@color/dl_action</color>
+    <color name="black">@color/dl_primary_black</color>
 
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <!-- Colors From Design Language -->
+    <color name="dl_primary_black">#100E14</color>
+    <color name="dl_secondary_black">#2A2A2A</color>
+    <color name="dl_action">#FFC83A</color>
+    <color name="dl_secondary_white">#BEBEBF</color>
+    <color name="dl_non_primary_text">#656565</color>
+    <color name="dl_white">#FFFFFF</color>
+    <color name="dl_primary_text">@color/dl_white</color>
 </resources>
