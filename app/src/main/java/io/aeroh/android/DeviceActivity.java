@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -75,6 +76,16 @@ public class DeviceActivity extends AppCompatActivity {
             }
         });
 
+        Button btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("ScannedDeviceActivity", "Back button clicked");
+                Intent intent = new Intent(getApplicationContext(), DevicesActivity.class);
+                startActivity(intent);
+            }
+        });
+
         Button btnSpeedChange = (Button) findViewById(R.id.btnSpeedChange);
         btnSpeedChange.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,7 +119,7 @@ public class DeviceActivity extends AppCompatActivity {
                     }
                 });
 
-        Button btnDeviceSettings = (Button) findViewById(R.id.btnDeviceSettings);
+        ImageView btnDeviceSettings = (ImageView) findViewById(R.id.btnDeviceSettings);
         btnDeviceSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -177,7 +188,8 @@ public class DeviceActivity extends AppCompatActivity {
     }
 
     void subscribeToMQTTServer() {
-        String topic = String.format("%s/responses", device.thing_name);;
+        String topic = String.format("%s/responses", device.thing_name);
+        ;
         mqttClient.subscribe(topic, null, null);
     }
 }
