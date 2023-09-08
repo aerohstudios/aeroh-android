@@ -184,9 +184,9 @@ public class DevicesActivity extends AppCompatActivity {
             }
             Device device = getItem(position);
             TextView name = convertView.findViewById(R.id.name);
-            TextView mac_addr = convertView.findViewById(R.id.mac_addr);
+            TextView room = convertView.findViewById(R.id.room);
             name.setText(device.name);
-            mac_addr.setText(device.mac_addr);
+            room.setText("Home");
             return convertView;
         }
     }
