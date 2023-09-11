@@ -57,15 +57,15 @@
             android:id="@+id/btnTogglePower"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:layout_marginHorizontal="20dp"
-            android:text="Toggle Power" />
+            android:text="Power" />
 
         <Button
             android:id="@+id/btnSpeedChange"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:layout_marginHorizontal="20dp"
             android:text="Change Speed" />
 
@@ -73,7 +73,7 @@
             android:id="@+id/btnTempUp"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:layout_marginHorizontal="20dp"
             android:text="Temp up" />
 
@@ -81,7 +81,7 @@
             android:id="@+id/btnTempDwn"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:layout_marginHorizontal="20dp"
             android:text="Temp Down" />
 
