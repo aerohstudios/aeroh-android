@@ -63,6 +63,8 @@
         <activity
             android:name=".DeviceActivity"
             android:exported="true" />
+        <activity android:name=".DeviceInfoActivity"
+            android:exported="false"/>
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 

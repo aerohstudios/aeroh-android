@@ -115,6 +115,15 @@ public class DeviceSettingsActivity extends AppCompatActivity {
             }
         });
 
+        TextView btnDeviceInfo = findViewById(R.id.btnDeviceInfo);
+        btnDeviceInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent deviceInfo = new Intent(getApplicationContext(), DeviceInfoActivity.class);
+                startActivity(deviceInfo);
+            }
+        });
+
         TextView btnUpdateFirmware = (TextView) findViewById(R.id.btnUpdateFirmware);
         btnUpdateFirmware.setOnClickListener(new View.OnClickListener() {
             @Override
