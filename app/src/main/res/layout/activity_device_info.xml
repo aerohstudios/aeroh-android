@@ -17,14 +17,14 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnBack"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginStart="16dp"
             android:background="@drawable/back_button"
             android:fontFamily="@font/font_awesome_6_pro_regular"
             android:text="\uf104"
             android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:layout_width="wrap_content"

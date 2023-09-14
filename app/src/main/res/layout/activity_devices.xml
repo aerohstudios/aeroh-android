@@ -29,8 +29,7 @@
                 android:fontFamily="@font/poppins_semibold"
                 android:text="@string/toolbar_heading_1"
                 android:textColor="@color/white"
-                android:textSize="24sp"
-                android:layout_marginBottom="-10dp"/>
+                android:textSize="24sp"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -63,8 +62,8 @@
             app:layout_constraintStart_toStartOf="parent"
             android:background="@drawable/background_ripple_effect_add_device_button"
             android:gravity="center"
-            android:layout_marginHorizontal="30dp"
-            android:layout_marginTop="100dp">
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginTop="96dp">
 
             <TextView
                 android:layout_width="wrap_content"
