@@ -6,6 +6,15 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="PrimaryTextAppearance">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/dl_primary_text</item>
+    </style>
+
+    <style name="SecondaryTextAppearance">
+        <item name="android:textSize">20sp</item>
+    </style>
+
     <!-- Base application theme. -->
     <style name="Theme.AerohAndroid" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/md_theme_light_primary</item>
