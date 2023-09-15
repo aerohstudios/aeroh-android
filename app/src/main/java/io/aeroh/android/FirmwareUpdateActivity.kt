@@ -19,7 +19,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -34,7 +33,6 @@ import io.aeroh.android.ui.theme.AerohAndroidTheme
 import io.aeroh.android.utils.MQTTClient
 import org.eclipse.paho.client.mqttv3.IMqttToken
 import org.json.JSONObject
-import java.lang.Integer.parseInt
 import java.util.UUID
 
 class FirmwareUpdateActivity : ComponentActivity() {
@@ -47,15 +45,14 @@ class FirmwareUpdateActivity : ComponentActivity() {
         UPDATE_CANCELLED,
         UPDATE_IN_PROGRESS,
         UPDATE_COMPLETE,
-        UPDATE_FAILED
+        UPDATE_FAILED,
+        DISMISS
     }
 
     enum class OTAStatus {
         NOT_STARTED,
         REQUESTED,
         DOWNLOADING,
-        INSTALLING,
-        REBOOTING,
         COMPLETE,
         FAILED,
     }
@@ -63,20 +60,17 @@ class FirmwareUpdateActivity : ComponentActivity() {
     enum class OTAFailReason {
         UNDEFINED,
         DEVICE_NOT_RESPONDING_TO_UPDATE_REQUEST,
-        DEVICE_DOES_NOT_UNDERSTAND_THE_REQUEST,
-        FIRMWARE_DOWNLOAD_FAILED,
-        UNABLE_TO_CONNECT_TO_THE_DEVICE,
-        DEVICE_STARTED_WITH_OLD_FIRMWARE
+        FAILURE_AFTER_OTA_REQUEST // can mean device started with the old firmware, or it didn't start or the new firmware has the same version as the old firmware
     }
     enum class CallbackName {
         GOT_VERSION,
-        GOT_UPDATE_STATUS
+        GOT_UPDATE_STATUS,
+        CHECK_NEW_VERSION
     }
 
     private var firmwareUpdateStatus = mutableStateOf(CHECKING_DEVICE_VERSION)
     private var otaStatus = mutableStateOf(OTAStatus.NOT_STARTED)
     private var otaFailReason = mutableStateOf(OTAFailReason.UNDEFINED)
-    private var downloadCompletionPercentage = mutableIntStateOf(0)
 
     private var mqttClient: MQTTClient? = null
     private var mqttCallbackRegistry: HashMap<String, CallbackName> = HashMap()
@@ -89,6 +83,7 @@ class FirmwareUpdateActivity : ComponentActivity() {
 
         device = getIntent()?.getExtras()?.get("device") as Device
         mqttClient = MQTTClient(applicationContext, device!!.mqtt_uri, device!!.thing_name)
+        connectToMQTTServer()
 
         setContent {
             AerohAndroidTheme {
@@ -102,9 +97,10 @@ class FirmwareUpdateActivity : ComponentActivity() {
                         DEVICE_UNREACHABLE -> DeviceUnreachableView()
                         START_UPDATE_PROMPT -> StartUpdatePromptView(firmwareUpdateStatus, deviceFirmwareVersion, latestFirmwareVersion, this)
                         UPDATE_CANCELLED -> finish()
-                        UPDATE_IN_PROGRESS -> UpdateInProgressView(otaStatus.value, downloadCompletionPercentage.value)
-                        UPDATE_COMPLETE -> UpdateCompleteView()
+                        UPDATE_IN_PROGRESS -> UpdateInProgressView(otaStatus.value)
+                        UPDATE_COMPLETE -> UpdateCompleteView(firmwareUpdateStatus)
                         UPDATE_FAILED -> UpdateFailedView()
+                        DISMISS -> finish()
                         else -> {}
                     }
                 }
@@ -112,24 +108,16 @@ class FirmwareUpdateActivity : ComponentActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        connectToMQTTServer()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        mqttClient!!.disconnect()
-    }
-
+    // --> Ask for current version to check against latest version
     private fun askDeviceFirmwareVersion(retryCount: Int, retryDelay: Long?, originalRequestToken: String?) {
+        Log.d(this.javaClass.simpleName, "Step 1. > askDeviceFirmwareVersion: $retryCount")
         if (retryCount == 0) {
             firmwareUpdateStatus.value = DEVICE_UNREACHABLE
             return
         }
         val requestMessage = JSONObject()
         requestMessage.put("command", "firmware")
-        requestMessage.put("actionType", "version")
+        requestMessage.put("action_type", "version")
 
         publishMQTTMessage(requestMessage, CallbackName.GOT_VERSION, originalRequestToken ?: UUID.randomUUID().toString())
 
@@ -140,15 +128,27 @@ class FirmwareUpdateActivity : ComponentActivity() {
         }, retryDelay ?: 3000)
     }
 
+    // --> GOT_VERSION Callback for askDeviceFirmwareVersion
+    private fun requestFirmwareVersionCallback(response: JSONObject) {
+        Log.d(this.javaClass.simpleName, "Step 1. > RequestFirmwareVersionCallback")
+        val version = response.get("version") as String
+        Log.d(this.javaClass.simpleName, "Got version: $version")
+        setDeviceFirmwareVersion(version)
+    }
+
+    // --> Ask the device to start the update process
     fun updateFirmware(version: String) {
+        Log.d(this.javaClass.simpleName, "Step 2. > Update Firmware")
         if (otaStatus.value == OTAStatus.NOT_STARTED) {
             requestFirmwareUpdateWithRetry(version, 10, null, null)
             otaStatus.value = OTAStatus.REQUESTED
         }
     }
 
+    // --> update request will be retried till we get a response
     private fun requestFirmwareUpdateWithRetry(version: String, retryCount: Int, retryDelay: Long?, originalRequestToken: String?) {
-        if (otaStatus.value == OTAStatus.REQUESTED) {
+        Log.d(this.javaClass.simpleName, "Step 2. > Update Firmware with Retry: $retryCount")
+        if (otaStatus.value == OTAStatus.REQUESTED && retryCount == 0) {
             otaStatus.value = OTAStatus.FAILED
             firmwareUpdateStatus.value = UPDATE_FAILED
             otaFailReason.value = OTAFailReason.DEVICE_NOT_RESPONDING_TO_UPDATE_REQUEST
@@ -157,8 +157,10 @@ class FirmwareUpdateActivity : ComponentActivity() {
 
         val requestMessage = JSONObject()
         requestMessage.put("command", "firmware")
-        requestMessage.put("actionType", "update")
-        requestMessage.put("actionValue", version)
+        requestMessage.put("action_type", "update")
+        requestMessage.put("action_value", version)
+        requestMessage.put("firmware_url", device!!.latestFirmwareURL)
+
         publishMQTTMessage(requestMessage, CallbackName.GOT_UPDATE_STATUS, originalRequestToken ?: UUID.randomUUID().toString())
 
         Handler(Looper.getMainLooper()).postDelayed({
@@ -168,6 +170,63 @@ class FirmwareUpdateActivity : ComponentActivity() {
         }, retryDelay ?: 3000)
     }
 
+    // --> GOT_UPDATE_STATUS Callback for requestFirmwareUpdateWithRetry
+    private fun requestFirmwareUpdateCallback(response: JSONObject) {
+        Log.d(this.javaClass.simpleName, "Step 2. > Request Firmware Update Callback")
+        if (otaStatus.value == OTAStatus.REQUESTED) {
+            when(response.get("action_type")) {
+                "downloading" -> {
+                    otaStatus.value = OTAStatus.DOWNLOADING
+                    Log.d(this.javaClass.simpleName, "DOWNLOADING")
+                    waitForUpdateToComplete()
+                }
+            }
+        }
+    }
+
+    // --> Device has now started the update, ask the device for
+    // the current version to check against latest version
+    private fun waitForUpdateToComplete() {
+        Log.d(this.javaClass.simpleName, "Step 3. > WaitForUpdateComplete")
+        waitForUpdateToCompleteWithRetry(30, 3000, null)
+    }
+
+    // --> Version check with retry
+    private fun waitForUpdateToCompleteWithRetry(retryCount: Int, retryDelay: Long?, originalRequestToken: String?) {
+        Log.d(this.javaClass.simpleName, "Step 3. > WaitForUpdateCompleteWithRetry: $retryCount")
+        if (retryCount == 0) {
+            if (otaStatus.value == OTAStatus.DOWNLOADING) {
+                otaStatus.value = OTAStatus.FAILED
+                firmwareUpdateStatus.value = UPDATE_FAILED
+                otaFailReason.value = OTAFailReason.FAILURE_AFTER_OTA_REQUEST
+            }
+            return
+        }
+
+        val requestMessage = JSONObject()
+        requestMessage.put("command", "firmware")
+        requestMessage.put("action_type", "version")
+
+        Log.d(this.javaClass.simpleName, "Publish Send Message")
+        publishMQTTMessage(requestMessage, CallbackName.CHECK_NEW_VERSION, originalRequestToken ?: UUID.randomUUID().toString())
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (otaStatus.value == OTAStatus.DOWNLOADING) {
+                waitForUpdateToCompleteWithRetry(retryCount-1, retryDelay, originalRequestToken);
+            }
+        }, retryDelay ?: 3000)
+    }
+
+    // --> Version check with retry
+    private fun checkNewVersionCallback(response: JSONObject) {
+        Log.d(this.javaClass.simpleName, "Step 3. > checkNewVersionCallback")
+        val version = response.get("version") as String
+        Log.d(this.javaClass.simpleName, "Got version: $version")
+        if (version == latestFirmwareVersion) {
+            otaStatus.value = OTAStatus.COMPLETE
+            firmwareUpdateStatus.value = UPDATE_COMPLETE
+        }
+    }
 
     private fun runMQTTCallback(callbackName: CallbackName, response: JSONObject) {
         when (callbackName) {
@@ -177,34 +236,13 @@ class FirmwareUpdateActivity : ComponentActivity() {
             CallbackName.GOT_UPDATE_STATUS -> {
                 requestFirmwareUpdateCallback(response)
             }
+            CallbackName.CHECK_NEW_VERSION -> {
+                checkNewVersionCallback(response)
+            }
             else -> {
-                Log.e(this.javaClass.name, "Can't identify callback")
+                Log.e(this.javaClass.simpleName, "Can't identify callback")
             }
         }
-    }
-    private fun requestFirmwareUpdateCallback(response: JSONObject) {
-        if (otaStatus.value == OTAStatus.REQUESTED) {
-            when(response.get("actionType")) {
-                "downloading" -> {
-                    otaStatus.value = OTAStatus.DOWNLOADING
-                    downloadCompletionPercentage.value = parseInt(response.get("percentage").toString())
-                }
-                "installing" -> {
-                    otaStatus.value = OTAStatus.INSTALLING
-                }
-                "rebooting" -> {
-                    otaStatus.value = OTAStatus.REBOOTING
-                }
-                "complete" -> {
-                    otaStatus.value = OTAStatus.COMPLETE
-                }
-            }
-        }
-    }
-
-    private fun requestFirmwareVersionCallback(response: JSONObject) {
-        val version = response.get("version") as String
-        setDeviceFirmwareVersion(version)
     }
 
     private fun publishMQTTMessage(payload: JSONObject, callbackName: CallbackName, originalRequestToken: String) {
@@ -213,8 +251,8 @@ class FirmwareUpdateActivity : ComponentActivity() {
         }
 
         val requestId = UUID.randomUUID().toString()
-        payload.put("requestId", requestId)
-        payload.put("originalRequestToken", originalRequestToken)
+        payload.put("request_id", requestId)
+        payload.put("original_request_token", originalRequestToken)
         val topic = String.format("%s/commands", device!!.thing_name)
         mqttClient!!.publish(topic, payload.toString(), null)
     }
@@ -283,8 +321,8 @@ class FirmwareUpdateActivity : ComponentActivity() {
             }
         }) { _, message ->
             val response = JSONObject(message.toString())
-            if (response.has("originalRequestToken")) {
-                val originalRequestToken = response.get("originalRequestToken") as String
+            if (response.has("original_request_token")) {
+                val originalRequestToken = response.get("original_request_token") as String
                 val callbackName = mqttCallbackRegistry[originalRequestToken]!!
                 runMQTTCallback(callbackName, response)
             }
@@ -369,21 +407,29 @@ fun StartUpdatePromptView(firmwareUpdateStatus: MutableState<FirmwareUpdateActiv
 }
 
 @Composable
-fun UpdateInProgressView(otaStatus: FirmwareUpdateActivity.OTAStatus, downloadPercentage: Int?) {
+fun UpdateInProgressView(otaStatus: FirmwareUpdateActivity.OTAStatus) {
     if (otaStatus == FirmwareUpdateActivity.OTAStatus.REQUESTED) {
         return PlaceHolderView("Asking the device to get the new firmware...")
     } else if (otaStatus == FirmwareUpdateActivity.OTAStatus.DOWNLOADING) {
         return PlaceHolderView("Downloading the new firmware...")
-    } else if (otaStatus == FirmwareUpdateActivity.OTAStatus.INSTALLING) {
-        return PlaceHolderView("Installing the firmware...")
-    } else if (otaStatus == FirmwareUpdateActivity.OTAStatus.REBOOTING) {
-        return PlaceHolderView("Rebooting...")
     }
 }
 
 @Composable
-fun UpdateCompleteView() {
-    PlaceHolderView("Update completed successfully")
+fun UpdateCompleteView(firmwareUpdateStatus: MutableState<FirmwareUpdateActivity.FirmwareUpdateStatus>) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        PlaceHolderView("Update completed successfully")
+        Button(
+            onClick = {
+                firmwareUpdateStatus.value = DISMISS
+            }
+        ) {
+            Text(text = "Done")
+        }
+    }
 }
 
 @Composable
@@ -463,7 +509,7 @@ fun UpdateInProgressViewPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            UpdateInProgressView(FirmwareUpdateActivity.OTAStatus.DOWNLOADING, 32)
+            UpdateInProgressView(FirmwareUpdateActivity.OTAStatus.DOWNLOADING)
         }
     }
 }
@@ -471,12 +517,15 @@ fun UpdateInProgressViewPreview() {
 @Preview(showBackground = true)
 @Composable
 fun UpdateCompleteViewPreview() {
+    var firmwareUpdateStatus = remember {
+        mutableStateOf(UPDATE_COMPLETE)
+    }
     AerohAndroidTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            UpdateCompleteView()
+            UpdateCompleteView(firmwareUpdateStatus)
         }
     }
 }

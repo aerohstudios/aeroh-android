@@ -65,9 +65,9 @@ public class DeviceActivity extends AppCompatActivity {
             public void onClick(View view) {
                 JSONObject requestMessage = new JSONObject();
                 try {
-                    requestMessage.put("requestId", UUID.randomUUID());
+                    requestMessage.put("request_id", UUID.randomUUID());
                     requestMessage.put("command", "power");
-                    requestMessage.put("actionType", "toggle");
+                    requestMessage.put("action_type", "toggle");
                 } catch (JSONException e) {
                     Log.e("DeviceActivity", e.getLocalizedMessage());
                 }
@@ -81,9 +81,9 @@ public class DeviceActivity extends AppCompatActivity {
             public void onClick(View view) {
                 JSONObject requestMessage = new JSONObject();
                 try {
-                    requestMessage.put("requestId", UUID.randomUUID());
+                    requestMessage.put("request_id", UUID.randomUUID());
                     requestMessage.put("command", "speed");
-                    requestMessage.put("actionType", "change");
+                    requestMessage.put("action_type", "change");
                 } catch (JSONException e) {
                     Log.e("DeviceActivity", e.getLocalizedMessage());
                 }
