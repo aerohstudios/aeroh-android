@@ -36,11 +36,19 @@ public class DeviceSettingsActivity extends AppCompatActivity {
         Context context = this;
 
         device = (Device) getIntent().getExtras().get("device");
-        TextView device_name = (TextView) findViewById(R.id.device_name);
         Log.i("DeviceSettingsActivity", String.format("Creating settings activity for device: %s", device.thing_name));
-        device_name.setText(device.name + " Settings");
 
-        Button btnRenameDevice = (Button) findViewById(R.id.btnRenameDevice);
+        Button backbtn = findViewById(R.id.btnBack);
+
+        backbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), DeviceActivity.class));
+                finish();
+            }
+        });
+
+        TextView btnRenameDevice = (TextView) findViewById(R.id.btnRenameDevice);
         btnRenameDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,7 +88,6 @@ public class DeviceSettingsActivity extends AppCompatActivity {
                                     Intent data = new Intent();
                                     data.putExtra("device_name", device.name);
                                     setResult(RESULT_RENAMED, data);
-                                    device_name.setText(device.name + " Settings");
                                 } else if (statusCode == 401) {
                                     // TODO: Redirect to Login
                                     Log.d("DeviceSettingsActivity", String.format("Update Response Failure: 401"));
@@ -108,7 +115,16 @@ public class DeviceSettingsActivity extends AppCompatActivity {
             }
         });
 
-        Button btnUpdateFirmware = (Button) findViewById(R.id.btnUpdateFirmware);
+        TextView btnDeviceInfo = findViewById(R.id.btnDeviceInfo);
+        btnDeviceInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent deviceInfo = new Intent(getApplicationContext(), DeviceInfoActivity.class);
+                startActivity(deviceInfo);
+            }
+        });
+
+        TextView btnUpdateFirmware = (TextView) findViewById(R.id.btnUpdateFirmware);
         btnUpdateFirmware.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,7 +134,7 @@ public class DeviceSettingsActivity extends AppCompatActivity {
             }
         });
 
-        Button btnRemoveDevice = (Button) findViewById(R.id.btnRemoveDevice);
+        TextView btnRemoveDevice = (TextView) findViewById(R.id.btnRemoveDevice);
         btnRemoveDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -151,9 +167,11 @@ public class DeviceSettingsActivity extends AppCompatActivity {
                                                         }
                                                     });
                                                 }
-                                            }}).
+                                            }
+                                        }).
                                         setNegativeButton(android.R.string.no, null).show();
-                            }}).
+                            }
+                        }).
                         setNegativeButton(android.R.string.no, null).show();
             }
         });

@@ -6,43 +6,130 @@
     android:layout_height="match_parent"
     tools:context=".DeviceSettingsActivity">
 
-<TextView
-    android:id="@+id/device_name"
-    android:layout_width="wrap_content"
-    android:layout_height="0dp"
-    android:layout_marginTop="60dp"
-    android:textSize="24sp"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/deviceSettingsToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
 
-<Button
-    android:id="@+id/btnRenameDevice"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="20dp"
-    android:text="Rename"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/device_name" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnBack"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/back_button"
+            android:fontFamily="@font/font_awesome_6_pro_regular"
+            android:text="\uf104"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
 
-<Button
-    android:id="@+id/btnUpdateFirmware"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="20dp"
-    android:text="Update Firmware"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/btnRenameDevice" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/poppins"
+            android:text="Settings"
+            android:textSize="18sp" />
 
-<Button
-    android:id="@+id/btnRemoveDevice"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="20dp"
-    android:text="Remove"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/btnUpdateFirmware" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@drawable/divider"
+        android:dividerPadding="10dp"
+        android:orientation="vertical"
+        android:showDividers="middle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/deviceSettingsToolbar">
+
+        <LinearLayout
+            android:id="@+id/vibrateOnTouch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginStart="10dp"
+                android:gravity="start|center"
+                android:text="Vibrate on touch"
+                style="@style/SecondaryTextAppearance"/>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                app:showText="false"
+                app:thumbTint="@color/design_default_color_on_primary"
+                app:thumbTintMode="src_atop"
+                app:trackTint="@color/primary_yellow" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btnRenameDevice"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="start|center"
+            android:text="Rename"
+            style="@style/SecondaryTextAppearance"/>
+
+        <TextView
+            android:id="@+id/btnDeviceInfo"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="start|center"
+            android:text="Device Info"
+            style="@style/SecondaryTextAppearance" />
+
+        <TextView
+            android:id="@+id/btnUpdateFirmware"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="start|center"
+            android:text="Update Firmware"
+            style="@style/SecondaryTextAppearance"/>
+
+        <TextView
+            android:id="@+id/btnConfigure"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="start|center"
+            android:text="Configure"
+            style="@style/SecondaryTextAppearance" />
+
+        <TextView
+            android:id="@+id/btnRemoveDevice"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="start|center"
+            android:text="Remove"
+            style="@style/SecondaryTextAppearance"/>
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
