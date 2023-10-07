@@ -37,7 +37,7 @@ import io.aeroh.android.ui.theme.AerohAndroidTheme
 
 @Composable
 fun UpdateInProgressView(otaStatus: FirmwareUpdateActivity.OTAStatus) {
-    if (false) {
+    if (otaStatus == FirmwareUpdateActivity.OTAStatus.REQUESTED) {
         return Column(
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -96,14 +96,14 @@ fun UpdateInProgressView(otaStatus: FirmwareUpdateActivity.OTAStatus) {
             )
             Spacer(modifier = Modifier.height(80.dp))
             LinearProgressIndicator(
-                progress = 50 / 100f,
+                progress = 100 / 100f,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
             )
         }
-    } else if (true) {
+    } else if (otaStatus == FirmwareUpdateActivity.OTAStatus.DOWNLOADING) {
         return Column(
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally,
