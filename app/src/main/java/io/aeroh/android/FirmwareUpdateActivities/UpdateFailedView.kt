@@ -89,8 +89,7 @@ fun UpdateFailedView() {
             onClick = { /* Abort button click logic */ },
             modifier = Modifier
                 .clip(RoundedCornerShape(percent = 50))
-//                .border(1.dp, Color.White, RoundedCornerShape(percent = 50))
-                .background(Color.Transparent)
+                .border(1.dp, Color.White, RoundedCornerShape(percent = 50))
                 .height(50.dp)
                 .fillMaxWidth(),
             contentPadding = PaddingValues(8.dp)
