@@ -1,6 +1,5 @@
 package io.aeroh.android.FirmwareUpdateActivities
 
-import UpdateFailedView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -81,7 +80,7 @@ fun DeviceUnreachableView() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Make sure it's connected and provisionede", style = TextStyle(
+            text = "Make sure it's connected and provisioned", style = TextStyle(
                 fontSize = 16.sp,
                 fontWeight = FontWeight(400),
                 color = Color(0xFFBEBEBF),
@@ -102,7 +101,7 @@ fun DeviceUnreachableView() {
             onClick = { /* Abort button click logic */ },
             modifier = Modifier
                 .clip(RoundedCornerShape(percent = 50))
-//                .border(1.dp, Color.White, RoundedCornerShape(percent = 50))
+                .border(1.dp, Color.White, RoundedCornerShape(percent = 50))
                 .background(Color.Transparent)
                 .height(50.dp)
                 .fillMaxWidth(),
@@ -123,7 +122,7 @@ fun DeviceUnreachableViewPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            UpdateFailedView()
+            DeviceUnreachableView()
         }
     }
 }
