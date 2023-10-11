@@ -18,6 +18,7 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.aeroh.android.RecordAndReplayActivities.ConfigureDeviceActivity;
 import io.aeroh.android.models.Device;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -155,6 +156,16 @@ public class DeviceSettingsActivity extends AppCompatActivity {
                                         setNegativeButton(android.R.string.no, null).show();
                             }}).
                         setNegativeButton(android.R.string.no, null).show();
+            }
+        });
+
+        Button btnConfigureScreen = (Button) findViewById(R.id.btnConfigureDevice);
+        btnConfigureScreen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent ConfigureDeviceIntent = new Intent(getApplicationContext(), ConfigureDeviceActivity.class);
+                ConfigureDeviceIntent.putExtra("device", device);
+                startActivity(ConfigureDeviceIntent);
             }
         });
     }
