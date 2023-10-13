@@ -1,5 +1,6 @@
 package io.aeroh.android
 
+import UpdateFailedView
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -7,26 +8,17 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import io.aeroh.android.FirmwareUpdateActivities.CheckDeviceVersionView
+import io.aeroh.android.FirmwareUpdateActivities.DeviceUnreachableView
+import io.aeroh.android.FirmwareUpdateActivities.NoUpdateRequiredView
+import io.aeroh.android.FirmwareUpdateActivities.StartUpdatePromptView
+import io.aeroh.android.FirmwareUpdateActivities.UpdateCompleteView
+import io.aeroh.android.FirmwareUpdateActivities.UpdateInProgressView
 import io.aeroh.android.FirmwareUpdateActivity.FirmwareUpdateStatus.*
 import io.aeroh.android.models.Device
 import io.aeroh.android.ui.theme.AerohAndroidTheme
@@ -340,207 +332,5 @@ class FirmwareVersion(val version: String) {
         major = majorStr.toInt()
         minor = minorStr.toInt()
         patch = patchStr.toInt()
-    }
-}
-
-@Composable
-fun PlaceHolderView(message: String) {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
-    ) {
-        Text(
-            text = message,
-            fontSize = 24.sp,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-fun CheckDeviceVersionView() {
-    PlaceHolderView("Checking for updates...")
-}
-
-@Composable
-fun NoUpdateRequiredView(deviceFirmwareVersion: String, latestFirmwareVersion: String) {
-    PlaceHolderView("Your device is up to date \nDevice Firmware Version: $deviceFirmwareVersion\nLatest Firmware Version: $latestFirmwareVersion")
-}
-
-@Composable
-fun DeviceUnreachableView() {
-    PlaceHolderView("Device unreachable!\nMake sure it's connected and provisioned.")
-}
-
-@Composable
-fun StartUpdatePromptView(firmwareUpdateStatus: MutableState<FirmwareUpdateActivity.FirmwareUpdateStatus>, deviceFirmwareVersion: String, latestFirmwareVersion: String, context: FirmwareUpdateActivity?) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        PlaceHolderView("Shall we update the firmware?\nCurrent Firmware Version: $deviceFirmwareVersion\nNew Firmware Version: $latestFirmwareVersion")
-        Row (
-            horizontalArrangement = Arrangement.spacedBy(space = 16.dp, alignment = Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Button(
-                onClick = {
-                    firmwareUpdateStatus.value = UPDATE_IN_PROGRESS
-                    context?.updateFirmware(latestFirmwareVersion)
-                }
-            ) {
-                Text(
-                    text = "Update",
-                )
-            }
-            Button(
-                onClick = {
-                    firmwareUpdateStatus.value = UPDATE_CANCELLED
-                }
-            ) {
-                Text(text = "Cancel")
-            }
-        }
-    }
-}
-
-@Composable
-fun UpdateInProgressView(otaStatus: FirmwareUpdateActivity.OTAStatus) {
-    if (otaStatus == FirmwareUpdateActivity.OTAStatus.REQUESTED) {
-        return PlaceHolderView("Asking the device to get the new firmware...")
-    } else if (otaStatus == FirmwareUpdateActivity.OTAStatus.DOWNLOADING) {
-        return PlaceHolderView("Downloading the new firmware...")
-    }
-}
-
-@Composable
-fun UpdateCompleteView(firmwareUpdateStatus: MutableState<FirmwareUpdateActivity.FirmwareUpdateStatus>) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        PlaceHolderView("Update completed successfully")
-        Button(
-            onClick = {
-                firmwareUpdateStatus.value = DISMISS
-            }
-        ) {
-            Text(text = "Done")
-        }
-    }
-}
-
-@Composable
-fun UpdateFailedView() {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(top = 8.dp)
-    ) {
-        Text(
-            text = "Update failed!",
-            fontSize = 24.sp
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CheckDeviceVersionViewPreview() {
-    AerohAndroidTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            CheckDeviceVersionView()
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun NoUpdateRequiredViewPreview() {
-    AerohAndroidTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            NoUpdateRequiredView("0.1.2", "0.1.2")
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DeviceUnreachableViewPreview() {
-    AerohAndroidTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            DeviceUnreachableView()
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun StartUpdatePromptViewPreview() {
-    var firmwareUpdateStatus = remember {
-        mutableStateOf(START_UPDATE_PROMPT)
-    }
-    AerohAndroidTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            StartUpdatePromptView(firmwareUpdateStatus, "0.1.1", "0.1.2", null)
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun UpdateInProgressViewPreview() {
-    AerohAndroidTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            UpdateInProgressView(FirmwareUpdateActivity.OTAStatus.DOWNLOADING)
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun UpdateCompleteViewPreview() {
-    var firmwareUpdateStatus = remember {
-        mutableStateOf(UPDATE_COMPLETE)
-    }
-    AerohAndroidTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            UpdateCompleteView(firmwareUpdateStatus)
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun UpdateFailedViewPreview() {
-    AerohAndroidTheme(
-        darkTheme = true
-    ) {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            UpdateFailedView()
-        }
     }
 }
