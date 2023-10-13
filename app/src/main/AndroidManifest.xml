@@ -30,6 +30,11 @@
             android:label="@string/title_activity_firmware_update"
             android:theme="@style/Theme.AerohAndroid" />
         <activity
+            android:name=".RecordAndReplayActivities.ConfigureDeviceActivity"
+            android:exported="false"
+            android:label="RecordAndReplayActivity"
+            android:theme="@style/Theme.AerohAndroid" />
+        <activity
             android:name=".SignupActivity"
             android:exported="false" />
         <activity
