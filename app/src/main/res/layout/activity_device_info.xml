@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Device info"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/dl_primary_text"
             android:textSize="16sp" />
 
     </androidx.appcompat.widget.Toolbar>
@@ -60,7 +60,7 @@
                 android:layout_marginStart="20dp"
                 android:gravity="start|center"
                 android:text="Device name:"
-                android:textColor="#FFFFFF" />
+                android:textColor="@color/dl_primary_text" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -70,7 +70,7 @@
                 android:drawablePadding="10dp"
                 android:gravity="end|center"
                 android:text="Mitsubishi AC"
-                android:textColor="#BEBEBF" />
+                android:textColor="@color/dl_secondary_white" />
 
 
         </LinearLayout>
@@ -90,7 +90,7 @@
                 android:layout_marginStart="20dp"
                 android:gravity="start|center"
                 android:text="Room name:"
-                android:textColor="#FFFFFF" />
+                android:textColor="@color/dl_primary_text" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -100,7 +100,7 @@
                 android:drawablePadding="10dp"
                 android:gravity="end|center"
                 android:text="Living room"
-                android:textColor="#BEBEBF" />
+                android:textColor="@color/dl_secondary_white" />
 
 
         </LinearLayout>
@@ -120,7 +120,7 @@
                 android:layout_marginStart="20dp"
                 android:gravity="start|center"
                 android:text="Device type:"
-                android:textColor="#FFFFFF" />
+                android:textColor="@color/dl_primary_text" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -130,7 +130,7 @@
                 android:drawablePadding="10dp"
                 android:gravity="end|center"
                 android:text="AC"
-                android:textColor="#BEBEBF" />
+                android:textColor="@color/dl_secondary_white" />
 
 
         </LinearLayout>
@@ -147,7 +147,7 @@
                 android:layout_marginStart="20dp"
                 android:gravity="start|center"
                 android:text="Mac address:"
-                android:textColor="#FFFFFF" />
+                android:textColor="@color/dl_primary_text" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -156,7 +156,7 @@
                 android:drawablePadding="10dp"
                 android:gravity="end|center"
                 android:text="12:AB:34:CD:56:EF"
-                android:textColor="#BEBEBF" />
+                android:textColor="@color/dl_secondary_white" />
 
 
         </LinearLayout>
@@ -173,7 +173,7 @@
                 android:layout_marginStart="20dp"
                 android:gravity="start|center"
                 android:text="Firmware version:"
-                android:textColor="#FFFFFF" />
+                android:textColor="@color/dl_primary_text" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -182,7 +182,7 @@
                 android:drawablePadding="10dp"
                 android:gravity="end|center"
                 android:text="1.3.1"
-                android:textColor="#BEBEBF" />
+                android:textColor="@color/dl_secondary_white" />
 
 
         </LinearLayout>
@@ -199,7 +199,7 @@
                 android:layout_marginStart="20dp"
                 android:gravity="start|center"
                 android:text="Device model:"
-                android:textColor="#FFFFFF" />
+                android:textColor="@color/dl_primary_text" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -208,7 +208,7 @@
                 android:drawablePadding="10dp"
                 android:gravity="end|center"
                 android:text="Aeroh Link"
-                android:textColor="#BEBEBF" />
+                android:textColor="@color/dl_secondary_white" />
 
 
         </LinearLayout>
@@ -225,7 +225,7 @@
                 android:layout_marginStart="20dp"
                 android:gravity="start|center"
                 android:text="IP address:"
-                android:textColor="#FFFFFF" />
+                android:textColor="@color/dl_primary_text" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -234,7 +234,7 @@
                 android:drawablePadding="10dp"
                 android:gravity="end|center"
                 android:text="192.168.2.1"
-                android:textColor="#BEBEBF" />
+                android:textColor="@color/dl_secondary_white" />
 
 
         </LinearLayout>

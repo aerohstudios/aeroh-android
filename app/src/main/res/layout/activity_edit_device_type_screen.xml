@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/dl_primary_text"
             android:textSize="16sp" />
 
     </androidx.appcompat.widget.Toolbar>
@@ -69,7 +69,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="TV"
-                    android:textColor="#BEBEBF" />
+                    android:textColor="@color/dl_secondary_white" />
 
             </LinearLayout>
 

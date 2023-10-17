@@ -16,6 +16,8 @@
     <color name="dl_non_primary_text">#656565</color>
     <color name="dl_white">#FFFFFF</color>
     <color name="dl_primary_text">@color/dl_white</color>
+    <color name="dl_error">@color/md_theme_dark_errorContainer</color>
+
 
     <!-- DO NOT MANUALLY EDIT THE FOLLOWING COLORS
          Color Palette is generated using tooling that could be found at:

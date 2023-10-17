@@ -39,7 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/toolbar_heading_2"
-                    android:textColor="#BEBEBF"
+                    android:textColor="@color/dl_secondary_white"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -63,7 +63,7 @@
             android:layout_marginTop="28dp"
             android:layout_marginBottom="16dp"
             android:text="Devices"
-            android:textColor="#656565"
+            android:textColor="@color/dl_non_primary_text"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/devices_list_view"

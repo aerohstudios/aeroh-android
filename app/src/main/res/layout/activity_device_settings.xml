@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Settings"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/dl_primary_text"
             android:textSize="16sp" />
 
     </androidx.appcompat.widget.Toolbar>
@@ -57,7 +57,7 @@
                 android:layout_marginStart="20dp"
                 android:gravity="start|center"
                 android:text="Vibrate on touch"
-                android:textColor="#FFFFFF" />
+                android:textColor="@color/dl_primary_text" />
 
             <androidx.appcompat.widget.SwitchCompat
                 android:layout_width="match_parent"
@@ -82,7 +82,7 @@
             android:gravity="start|center"
             android:paddingHorizontal="20dp"
             android:text="Device info"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/dl_primary_text" />
 
         <TextView
             android:id="@+id/btnUpdateFirmware"
@@ -95,7 +95,7 @@
             android:gravity="start|center"
             android:paddingHorizontal="20dp"
             android:text="Update Firmware"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/dl_primary_text" />
 
         <TextView
             android:id="@+id/btnConfigureDevice"
@@ -108,7 +108,7 @@
             android:gravity="start|center"
             android:paddingHorizontal="20dp"
             android:text="Configure"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/dl_primary_text" />
 
         <TextView
             android:id="@+id/btnRenameDevice"
@@ -120,7 +120,7 @@
             android:gravity="start|center"
             android:paddingHorizontal="20dp"
             android:text="Rename"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/dl_primary_text" />
 
         <TextView
             android:id="@+id/btnRemoveDevice"
@@ -132,7 +132,7 @@
             android:gravity="start|center"
             android:paddingHorizontal="20dp"
             android:text="Delete"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/dl_primary_text" />
     </LinearLayout>
 
 
