@@ -30,16 +30,16 @@
                     android:id="@+id/txtGreeting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
                     android:text="@string/toolbar_heading_1"
                     android:textColor="@color/white"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/toolbar_heading_2"
-                    android:textColor="@color/white"
+                    android:textColor="@color/dl_secondary_white"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -49,31 +49,34 @@
                 android:layout_height="30dp"
                 android:layout_gravity="top|end"
                 android:layout_marginEnd="16dp"
+                android:contentDescription="menu icon"
                 android:src="@drawable/ic_hamburger" />
 
         </androidx.appcompat.widget.Toolbar>
 
-        <Button
-            android:id="@+id/btnAddDevice"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/round_button"
-            android:fontFamily="@font/font_awesome_6_pro_regular"
-            android:text="\ue59e"
-            android:textColor="@color/black"
+        <TextView
+            android:id="@+id/deviceText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="35dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="28dp"
+            android:layout_marginBottom="16dp"
+            android:text="Devices"
+            android:textColor="@color/dl_non_primary_text"
             android:textSize="18sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/devices_list_view"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/devicesActivityToolbar" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnAddDevice" />
 
         <ListView
             android:id="@+id/devices_list_view"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="60dp"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="15dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="240dp"
+            android:divider="@drawable/divider"
+            android:dividerHeight="1dp"
             android:paddingLeft="20dp"
             android:paddingTop="20dp"
             android:paddingRight="20dp"
@@ -81,7 +84,44 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/devicesActivityToolbar" />
+            app:layout_constraintTop_toBottomOf="@+id/btnAddDevice" />
+
+        <LinearLayout
+            android:id="@+id/btnAddDevice"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/add_new_device_button"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/devicesActivityToolbar">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginStart="4dp"
+                android:gravity="center"
+                android:text="@string/add_new_device_text"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="88dp"
+                android:background="@drawable/button_background_stroke_yellow"
+                android:padding="8dp"
+                android:src="@drawable/ic_positive_sign"
+                android:contentDescription="add device"/>
+
+        </LinearLayout>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView

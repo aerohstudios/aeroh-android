@@ -20,8 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -99,7 +99,7 @@ public class DevicesActivity extends AppCompatActivity {
             }
         });
 
-        Button btnAddDevice = findViewById(R.id.btnAddDevice);
+        LinearLayout btnAddDevice = findViewById(R.id.btnAddDevice);
         btnAddDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -178,9 +178,9 @@ public class DevicesActivity extends AppCompatActivity {
             }
             Device device = getItem(position);
             TextView name = convertView.findViewById(R.id.name);
-            TextView mac_addr = convertView.findViewById(R.id.mac_addr);
+            TextView roomName = convertView.findViewById(R.id.room);
             name.setText(device.name);
-            mac_addr.setText(device.mac_addr);
+            roomName.setText("Bedroom");
             return convertView;
         }
     }
@@ -191,7 +191,7 @@ public class DevicesActivity extends AppCompatActivity {
         TextView userEmail = findViewById(R.id.regUserEmail);
         userEmail.setText(email);
         TextView greetingText = findViewById(R.id.txtGreeting);
-        greetingText.setText("Hi " + firstName);
+        greetingText.setText("Hi, " + firstName);
     }
 
     void updateUser() {

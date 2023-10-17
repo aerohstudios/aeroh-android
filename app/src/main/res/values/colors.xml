@@ -16,10 +16,17 @@
     <color name="dl_non_primary_text">#656565</color>
     <color name="dl_white">#FFFFFF</color>
     <color name="dl_primary_text">@color/dl_white</color>
+    <color name="dl_error">@color/md_theme_dark_errorContainer</color>
+
 
     <!-- DO NOT MANUALLY EDIT THE FOLLOWING COLORS
          Color Palette is generated using tooling that could be found at:
          https://github.com/aerohstudios/aeroh-design -->
+
+    <color name="switchThumbColorOn">#F34E4E</color> <!-- Yellow color for thumb when on -->
+    <color name="switchTrackColorOn">#FFC83A</color> <!-- Green color for track when on -->
+    <color name="switchThumbColorOff">#FFFFFF</color> <!-- Orange color for thumb when off -->
+    <color name="switchTrackColorOff">#2A2A2A</color>
 
     <color name="md_theme_light_primary">#FF9100</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>

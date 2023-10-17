@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DeviceInfoActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/deviceActivityToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnBack"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:backgroundTint="@color/md_theme_dark_background"
+            android:fontFamily="@font/font_awesome_6_pro_regular"
+            android:text="\uf104"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Device info"
+            android:textColor="@color/dl_primary_text"
+            android:textSize="16sp" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@drawable/divider"
+        android:dividerPadding="20dp"
+        android:orientation="vertical"
+        android:showDividers="middle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/deviceActivityToolbar">
+
+        <LinearLayout
+            android:id="@+id/btnDeviceName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginStart="20dp"
+                android:gravity="start|center"
+                android:text="Device name:"
+                android:textColor="@color/dl_primary_text" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
+                android:drawableEnd="@drawable/ic_navigation_arrow_secondary"
+                android:drawablePadding="10dp"
+                android:gravity="end|center"
+                android:text="Mitsubishi AC"
+                android:textColor="@color/dl_secondary_white" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btnRoomName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginStart="20dp"
+                android:gravity="start|center"
+                android:text="Room name:"
+                android:textColor="@color/dl_primary_text" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
+                android:drawableEnd="@drawable/ic_navigation_arrow_secondary"
+                android:drawablePadding="10dp"
+                android:gravity="end|center"
+                android:text="Living room"
+                android:textColor="@color/dl_secondary_white" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btnDeviceType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginStart="20dp"
+                android:gravity="start|center"
+                android:text="Device type:"
+                android:textColor="@color/dl_primary_text" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
+                android:drawableEnd="@drawable/ic_navigation_arrow_secondary"
+                android:drawablePadding="10dp"
+                android:gravity="end|center"
+                android:text="AC"
+                android:textColor="@color/dl_secondary_white" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/macAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginStart="20dp"
+                android:gravity="start|center"
+                android:text="Mac address:"
+                android:textColor="@color/dl_primary_text" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
+                android:drawablePadding="10dp"
+                android:gravity="end|center"
+                android:text="12:AB:34:CD:56:EF"
+                android:textColor="@color/dl_secondary_white" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/firmwareVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginStart="20dp"
+                android:gravity="start|center"
+                android:text="Firmware version:"
+                android:textColor="@color/dl_primary_text" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
+                android:drawablePadding="10dp"
+                android:gravity="end|center"
+                android:text="1.3.1"
+                android:textColor="@color/dl_secondary_white" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/deviceModel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginStart="20dp"
+                android:gravity="start|center"
+                android:text="Device model:"
+                android:textColor="@color/dl_primary_text" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
+                android:drawablePadding="10dp"
+                android:gravity="end|center"
+                android:text="Aeroh Link"
+                android:textColor="@color/dl_secondary_white" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/idAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginStart="20dp"
+                android:gravity="start|center"
+                android:text="IP address:"
+                android:textColor="@color/dl_primary_text" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
+                android:drawablePadding="10dp"
+                android:gravity="end|center"
+                android:text="192.168.2.1"
+                android:textColor="@color/dl_secondary_white" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

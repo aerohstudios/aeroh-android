@@ -24,4 +24,5 @@
     <string name="drawer_open_string">Open Drawer</string>
     <string name="drawer_close_string">Close Drawer</string>
     <string name="first_name_txt">First Name</string>
+    <string name="add_new_device_text">Add a New Device</string>
 </resources>
