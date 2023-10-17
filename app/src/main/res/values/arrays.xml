@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="room_names_array">
+        <item>Living room</item>
+        <item>Dining room</item>
+        <item>Bedroom</item>
+        <item>Guest room</item>
+        <item>Custom</item>
+    </string-array>
+</resources>
